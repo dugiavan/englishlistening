@@ -1,0 +1,1616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<title>English Listening Game</title>
+<style>
+/* ============================================================
+   CSS VARIABLES & RESET
+   ============================================================ */
+:root {
+  --bg: #0d1117;
+  --surface: #161b22;
+  --surface2: #21262d;
+  --border: #30363d;
+  --accent: #58a6ff;
+  --accent2: #f78166;
+  --accent3: #56d364;
+  --accent4: #d2a8ff;
+  --text: #e6edf3;
+  --text2: #8b949e;
+  --correct: #1a4731;
+  --correct-border: #56d364;
+  --wrong: #4a1515;
+  --wrong-border: #f78166;
+  --btn-radius: 16px;
+  --min-btn: 60px;
+  --font-base: 18px;
+  --shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+  font-size: var(--font-base);
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   HEADER
+   ============================================================ */
+#app-header {
+  width: 100%;
+  background: linear-gradient(135deg, #1a2332 0%, #0d1117 100%);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 20px 12px;
+  text-align: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+#app-header h1 {
+  font-size: clamp(20px, 5vw, 28px);
+  font-weight: 800;
+  letter-spacing: -0.5px;
+  background: linear-gradient(90deg, var(--accent), var(--accent4));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+#app-header p {
+  font-size: 13px;
+  color: var(--text2);
+  margin-top: 2px;
+}
+
+/* ============================================================
+   MAIN CONTAINER
+   ============================================================ */
+#main {
+  width: 100%;
+  max-width: 680px;
+  padding: 16px 14px 80px;
+  flex: 1;
+}
+
+/* ============================================================
+   SCREENS
+   ============================================================ */
+.screen { display: none; }
+.screen.active { display: flex; flex-direction: column; gap: 14px; animation: fadeIn 0.3s ease; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--btn-radius);
+  padding: 18px;
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text2);
+  margin-bottom: 10px;
+  font-weight: 600;
+}
+
+/* ============================================================
+   BUTTONS (GENERIC)
+   ============================================================ */
+.btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: var(--min-btn);
+  border: none;
+  border-radius: var(--btn-radius);
+  font-size: 17px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.1s;
+  padding: 12px 18px;
+  text-align: center;
+  width: 100%;
+  -webkit-user-select: none;
+  user-select: none;
+}
+.btn:active { transform: scale(0.97); opacity: 0.85; }
+
+.btn-primary { background: var(--accent); color: #0d1117; }
+.btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+.btn-success { background: var(--correct-border); color: #0d1117; }
+.btn-danger { background: var(--accent2); color: #0d1117; }
+.btn-purple { background: var(--accent4); color: #0d1117; }
+.btn-warn { background: #e3b341; color: #0d1117; }
+.btn-sm { min-height: 50px; font-size: 15px; }
+
+/* ============================================================
+   MODE SELECTION SCREEN
+   ============================================================ */
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.mode-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--btn-radius);
+  padding: 18px 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, transform 0.1s;
+  text-align: center;
+}
+.mode-card:active { transform: scale(0.96); }
+.mode-card:hover, .mode-card.hover { border-color: var(--accent); }
+.mode-card .mode-icon { font-size: 32px; margin-bottom: 8px; }
+.mode-card .mode-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.mode-card .mode-desc { font-size: 12px; color: var(--text2); margin-top: 4px; }
+.mode-card.mode-1 { border-top: 3px solid #56d364; }
+.mode-card.mode-2 { border-top: 3px solid #58a6ff; }
+.mode-card.mode-3 { border-top: 3px solid #d2a8ff; }
+.mode-card.mode-4 { border-top: 3px solid #f78166; }
+.mode-card.mode-5 { border-top: 3px solid #e3b341; }
+
+/* ============================================================
+   DIFFICULTY SELECTOR
+   ============================================================ */
+.diff-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.diff-btn {
+  min-height: 52px;
+  font-size: 15px;
+  border-radius: 12px;
+  border: 2px solid var(--border);
+  background: var(--surface2);
+  color: var(--text2);
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  padding: 8px;
+}
+.diff-btn:active { transform: scale(0.96); }
+.diff-btn.active { background: var(--accent); color: #0d1117; border-color: var(--accent); }
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress-wrap { background: var(--surface2); border-radius: 99px; height: 8px; overflow: hidden; }
+.progress-bar { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent4)); border-radius: 99px; transition: width 0.4s ease; }
+.progress-info { display: flex; justify-content: space-between; font-size: 13px; color: var(--text2); margin-top: 6px; }
+
+/* ============================================================
+   SCORE DISPLAY
+   ============================================================ */
+.score-row { display: flex; gap: 10px; }
+.score-box {
+  flex: 1;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 10px;
+  text-align: center;
+}
+.score-box .score-num { font-size: 26px; font-weight: 800; }
+.score-box .score-label { font-size: 12px; color: var(--text2); }
+.score-box.correct .score-num { color: var(--correct-border); }
+.score-box.wrong .score-num { color: var(--accent2); }
+
+/* ============================================================
+   AUDIO CONTROLS
+   ============================================================ */
+.audio-controls { display: flex; flex-direction: column; gap: 10px; }
+.audio-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.audio-btn-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+.speed-wrap { display: flex; flex-direction: column; gap: 6px; }
+.speed-label { display: flex; justify-content: space-between; font-size: 13px; color: var(--text2); }
+.speed-label span { color: var(--accent); font-weight: 700; }
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  border-radius: 99px;
+  background: var(--surface2);
+  outline: none;
+  cursor: pointer;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(88,166,255,0.5);
+}
+
+/* ============================================================
+   QUESTION AREA
+   ============================================================ */
+.question-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--btn-radius);
+  padding: 20px;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.question-text {
+  font-size: clamp(16px, 4vw, 20px);
+  font-weight: 600;
+  text-align: center;
+  color: var(--text);
+  line-height: 1.5;
+}
+.listening-hint {
+  font-size: 14px;
+  color: var(--text2);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+/* ============================================================
+   ANSWER CHOICES
+   ============================================================ */
+.choices-wrap { display: flex; flex-direction: column; gap: 10px; }
+.choice-btn {
+  width: 100%;
+  min-height: 62px;
+  background: var(--surface2);
+  border: 2px solid var(--border);
+  border-radius: var(--btn-radius);
+  color: var(--text);
+  font-size: clamp(15px, 3.5vw, 18px);
+  font-weight: 500;
+  cursor: pointer;
+  padding: 14px 16px;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  transition: border-color 0.15s, background 0.15s, transform 0.1s;
+  line-height: 1.4;
+}
+.choice-btn:active { transform: scale(0.98); }
+.choice-btn .choice-letter {
+  min-width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.choice-btn.correct {
+  background: var(--correct);
+  border-color: var(--correct-border);
+  animation: popIn 0.25s ease;
+}
+.choice-btn.wrong {
+  background: var(--wrong);
+  border-color: var(--wrong-border);
+  animation: shake 0.3s ease;
+}
+.choice-btn:disabled { cursor: default; }
+
+@keyframes popIn { 0%{transform:scale(1)} 50%{transform:scale(1.03)} 100%{transform:scale(1)} }
+@keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-6px)} 75%{transform:translateX(6px)} }
+
+/* ============================================================
+   FEEDBACK BANNER
+   ============================================================ */
+.feedback-banner {
+  border-radius: 12px;
+  padding: 14px 18px;
+  font-size: 16px;
+  font-weight: 600;
+  text-align: center;
+  display: none;
+}
+.feedback-banner.show { display: block; animation: fadeIn 0.2s ease; }
+.feedback-banner.correct { background: var(--correct); border: 1px solid var(--correct-border); color: var(--correct-border); }
+.feedback-banner.wrong { background: var(--wrong); border: 1px solid var(--wrong-border); color: var(--wrong-border); }
+
+/* ============================================================
+   ACTION ROW BOTTOM
+   ============================================================ */
+.action-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.action-row-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+
+/* ============================================================
+   RESULT SCREEN
+   ============================================================ */
+.result-big {
+  text-align: center;
+  padding: 20px 0;
+}
+.result-icon { font-size: 64px; }
+.result-title { font-size: 26px; font-weight: 800; margin: 10px 0 4px; }
+.result-sub { font-size: 16px; color: var(--text2); }
+.result-score-big { font-size: 52px; font-weight: 900; color: var(--accent); }
+
+/* ============================================================
+   AUTOPLAY TOGGLE
+   ============================================================ */
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 0;
+}
+.toggle-label { font-size: 15px; color: var(--text); }
+.toggle-switch {
+  position: relative;
+  width: 52px;
+  height: 28px;
+  cursor: pointer;
+}
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border);
+  border-radius: 99px;
+  transition: background 0.2s;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 3px;
+  top: 3px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform 0.2s;
+}
+.toggle-switch input:checked + .toggle-slider { background: var(--accent); }
+.toggle-switch input:checked + .toggle-slider::before { transform: translateX(24px); }
+
+/* ============================================================
+   HINT BOX
+   ============================================================ */
+.hint-box {
+  background: #1a2332;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 15px;
+  color: var(--accent);
+  display: none;
+}
+.hint-box.show { display: block; animation: fadeIn 0.2s; }
+
+/* ============================================================
+   TENSE BADGE
+   ============================================================ */
+.tense-badge {
+  display: inline-block;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 4px 12px;
+  font-size: 12px;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+footer {
+  width: 100%;
+  text-align: center;
+  padding: 16px;
+  font-size: 13px;
+  color: var(--text2);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  margin-top: auto;
+}
+
+/* ============================================================
+   SPEAKING ANIMATION
+   ============================================================ */
+.speak-anim {
+  display: inline-flex;
+  gap: 4px;
+  align-items: flex-end;
+  height: 20px;
+}
+.speak-anim span {
+  width: 4px;
+  background: var(--accent);
+  border-radius: 2px;
+  animation: wave 0.9s ease infinite;
+}
+.speak-anim span:nth-child(2) { animation-delay: 0.15s; }
+.speak-anim span:nth-child(3) { animation-delay: 0.3s; }
+.speak-anim span:nth-child(4) { animation-delay: 0.45s; }
+@keyframes wave {
+  0%,100%{height:4px}
+  50%{height:18px}
+}
+.speak-anim.hidden { display: none; }
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media(min-width:480px) {
+  .audio-btn-row { grid-template-columns: 1fr 1fr 1fr; }
+}
+@media(min-width:600px) {
+  :root { --font-base: 19px; }
+  .mode-grid { grid-template-columns: repeat(3, 1fr); }
+}
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HEADER
+     ============================================================ -->
+<header id="app-header">
+  <h1>🎧 English Listening</h1>
+  <p>Listen • Understand • Choose</p>
+</header>
+
+<div id="main">
+
+  <!-- ============================================================
+       SCREEN: MODE SELECTION
+       ============================================================ -->
+  <div id="screen-menu" class="screen active">
+    <div class="card">
+      <div class="section-title">Select Difficulty</div>
+      <div class="diff-row">
+        <button class="diff-btn active" onclick="setDiff('beginner')">🌱 Beginner</button>
+        <button class="diff-btn" onclick="setDiff('intermediate')">📘 Medium</button>
+        <button class="diff-btn" onclick="setDiff('advanced')">🔥 Advanced</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="section-title">Choose a Game Mode</div>
+      <div class="mode-grid">
+        <div class="mode-card mode-1" onclick="startGame(1)">
+          <div class="mode-icon">🔤</div>
+          <div class="mode-name">Word Listening</div>
+          <div class="mode-desc">Super Easy • 40 words</div>
+        </div>
+        <div class="mode-card mode-2" onclick="startGame(2)">
+          <div class="mode-icon">📝</div>
+          <div class="mode-name">Simple Sentences</div>
+          <div class="mode-desc">Easy • 60 sentences</div>
+        </div>
+        <div class="mode-card mode-3" onclick="startGame(3)">
+          <div class="mode-icon">📚</div>
+          <div class="mode-name">Grammar Focus</div>
+          <div class="mode-desc">Medium • 60 questions</div>
+        </div>
+        <div class="mode-card mode-4" onclick="startGame(4)">
+          <div class="mode-icon">💬</div>
+          <div class="mode-name">Dialogues</div>
+          <div class="mode-desc">Medium • 40 dialogues</div>
+        </div>
+        <div class="mode-card mode-5" onclick="startGame(5)">
+          <div class="mode-icon">📖</div>
+          <div class="mode-name">Paragraphs</div>
+          <div class="mode-desc">Hard • 30 paragraphs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================================
+       SCREEN: GAME
+       ============================================================ -->
+  <div id="screen-game" class="screen">
+
+    <!-- Progress -->
+    <div class="card">
+      <div class="progress-wrap">
+        <div class="progress-bar" id="progress-bar" style="width:0%"></div>
+      </div>
+      <div class="progress-info">
+        <span id="progress-text">Question 1 of 10</span>
+        <span id="mode-label">Mode 1</span>
+      </div>
+    </div>
+
+    <!-- Score -->
+    <div class="score-row">
+      <div class="score-box correct">
+        <div class="score-num" id="score-correct">0</div>
+        <div class="score-label">✅ Correct</div>
+      </div>
+      <div class="score-box wrong">
+        <div class="score-num" id="score-wrong">0</div>
+        <div class="score-label">❌ Wrong</div>
+      </div>
+      <div class="score-box">
+        <div class="score-num" id="score-streak">0</div>
+        <div class="score-label">🔥 Streak</div>
+      </div>
+    </div>
+
+    <!-- Audio Controls -->
+    <div class="card audio-controls">
+      <div class="section-title">Audio Controls</div>
+      <div class="audio-btn-row">
+        <button class="btn btn-primary btn-sm" onclick="playAudio()">▶ Play</button>
+        <button class="btn btn-secondary btn-sm" onclick="replayAudio()">🔁 Replay</button>
+      </div>
+      <div class="audio-btn-row-3">
+        <button class="btn btn-secondary btn-sm" onclick="repeatLast()">🔂 Repeat Last</button>
+        <button class="btn btn-secondary btn-sm" id="hint-btn" onclick="showHint()">💡 Hint</button>
+        <div></div>
+      </div>
+
+      <!-- Speaking animation -->
+      <div class="listening-hint" id="speak-status">
+        <div class="speak-anim hidden" id="speak-anim">
+          <span></span><span></span><span></span><span></span>
+        </div>
+        <span id="speak-text">Press Play to listen</span>
+      </div>
+
+      <!-- Autoplay toggle -->
+      <div class="toggle-row">
+        <span class="toggle-label">Auto-play audio</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="autoplay-toggle" checked onchange="toggleAutoplay()">
+          <span class="toggle-slider"></span>
+        </label>
+      </div>
+
+      <!-- Speed slider -->
+      <div class="speed-wrap">
+        <div class="speed-label">
+          <span>Voice Speed</span>
+          <span id="speed-display">0.9×</span>
+        </div>
+        <input type="range" id="speed-slider" min="0.6" max="1.2" step="0.05" value="0.9"
+          oninput="updateSpeed(this.value)">
+        <div class="speed-label">
+          <span style="font-size:11px">Slow (0.6)</span>
+          <span style="font-size:11px">Normal (0.9)</span>
+          <span style="font-size:11px">Fast (1.2)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question -->
+    <div class="card question-card">
+      <div>
+        <div id="tense-badge" class="tense-badge" style="display:none"></div>
+        <div class="question-text" id="question-text">Press Play to start the question</div>
+      </div>
+    </div>
+
+    <!-- Hint Box -->
+    <div class="hint-box" id="hint-box">💡 <span id="hint-text"></span></div>
+
+    <!-- Choices -->
+    <div class="choices-wrap" id="choices-wrap"></div>
+
+    <!-- Feedback -->
+    <div class="feedback-banner" id="feedback-banner"></div>
+
+    <!-- Action Buttons -->
+    <div class="action-row">
+      <button class="btn btn-success" id="next-btn" onclick="nextQuestion()" style="display:none">Next →</button>
+      <button class="btn btn-secondary" onclick="goMenu()">🏠 Menu</button>
+    </div>
+
+  </div>
+
+  <!-- ============================================================
+       SCREEN: RESULT
+       ============================================================ -->
+  <div id="screen-result" class="screen">
+    <div class="card result-big">
+      <div class="result-icon" id="result-icon">🏆</div>
+      <div class="result-title" id="result-title">Well done!</div>
+      <div class="result-score-big" id="result-score-big">0%</div>
+      <div class="result-sub" id="result-sub"></div>
+    </div>
+    <div class="score-row">
+      <div class="score-box correct">
+        <div class="score-num" id="res-correct">0</div>
+        <div class="score-label">✅ Correct</div>
+      </div>
+      <div class="score-box wrong">
+        <div class="score-num" id="res-wrong">0</div>
+        <div class="score-label">❌ Wrong</div>
+      </div>
+    </div>
+    <button class="btn btn-primary" onclick="restartGame()">🔄 Play Again</button>
+    <button class="btn btn-secondary" onclick="goMenu()">🏠 Main Menu</button>
+    <footer style="margin-top:8px;background:none;border:none">Coded &amp; Designed by DuGiaVăn</footer>
+  </div>
+
+</div><!-- end #main -->
+
+<footer id="main-footer">Coded &amp; Designed by DuGiaVăn</footer>
+
+<script>
+/* ============================================================
+   DATA: MODE 1 — WORD LISTENING (40 words)
+   ============================================================ */
+const mode1Data = [
+  { audio:"apple", choices:["apple","table","pencil"], answer:0 },
+  { audio:"book", choices:["cook","book","look"], answer:1 },
+  { audio:"school", choices:["fool","pool","school"], answer:2 },
+  { audio:"happy", choices:["happy","angry","hungry"], answer:0 },
+  { audio:"water", choices:["butter","water","matter"], answer:1 },
+  { audio:"doctor", choices:["doctor","actor","teacher"], answer:0 },
+  { audio:"family", choices:["family","factory","finally"], answer:0 },
+  { audio:"orange", choices:["orange","arrange","strange"], answer:0 },
+  { audio:"window", choices:["window","pillow","shadow"], answer:0 },
+  { audio:"garden", choices:["warden","garden","burden"], answer:1 },
+  { audio:"music", choices:["magic","music","basic"], answer:1 },
+  { audio:"computer", choices:["commuter","computer","customer"], answer:1 },
+  { audio:"elephant", choices:["elephant","relevant","pleasant"], answer:0 },
+  { audio:"telephone", choices:["microphone","telephone","saxophone"], answer:1 },
+  { audio:"beautiful", choices:["beautiful","powerful","helpful"], answer:0 },
+  { audio:"kitchen", choices:["kitchen","chicken","thicken"], answer:0 },
+  { audio:"morning", choices:["boring","morning","warning"], answer:1 },
+  { audio:"teacher", choices:["teacher","preacher","creature"], answer:0 },
+  { audio:"banana", choices:["banana","bandana","piranha"], answer:0 },
+  { audio:"purple", choices:["circle","purple","turtle"], answer:1 },
+  { audio:"hospital", choices:["hospital","historical","horizontal"], answer:0 },
+  { audio:"umbrella", choices:["umbrella","vanilla","gorilla"], answer:0 },
+  { audio:"butterfly", choices:["butterfly","dragonfly","firefly"], answer:0 },
+  { audio:"chocolate", choices:["chocolate","complicated","celebrated"], answer:0 },
+  { audio:"sandwich", choices:["sandwich","spinach","cabbage"], answer:0 },
+  { audio:"dictionary", choices:["documentary","dictionary","secretary"], answer:1 },
+  { audio:"airport", choices:["airport","seaport","carport"], answer:0 },
+  { audio:"library", choices:["library","literary","lottery"], answer:0 },
+  { audio:"basketball", choices:["basketball","volleyball","football"], answer:0 },
+  { audio:"supermarket", choices:["supermarket","department","apartment"], answer:0 },
+  { audio:"television", choices:["television","permission","condition"], answer:0 },
+  { audio:"mountain", choices:["mountain","fountain","captain"], answer:0 },
+  { audio:"cucumber", choices:["cucumber","consumer","customer"], answer:0 },
+  { audio:"December", choices:["December","November","September"], answer:0 },
+  { audio:"strawberry", choices:["strawberry","blueberry","raspberry"], answer:0 },
+  { audio:"ambulance", choices:["ambulance","abundance","evidence"], answer:0 },
+  { audio:"Wednesday", choices:["Wednesday","Saturday","Thursday"], answer:0 },
+  { audio:"geography", choices:["geography","biography","photography"], answer:0 },
+  { audio:"vegetable", choices:["vegetable","valuable","variable"], answer:0 },
+  { audio:"calculator", choices:["calculator","escalator","alligator"], answer:0 },
+];
+
+/* ============================================================
+   DATA: MODE 2 — SIMPLE SENTENCE LISTENING (60 questions)
+   ============================================================ */
+const mode2Data = [
+  { audio:"She plays football.", choices:["She plays football","She eats breakfast","She reads books"], answer:0, tense:"present_simple" },
+  { audio:"He drinks water.", choices:["He drinks water","He drinks milk","He eats water"], answer:0, tense:"present_simple" },
+  { audio:"They go to school.", choices:["They go to work","They go to school","They go home"], answer:1, tense:"present_simple" },
+  { audio:"I am reading a book.", choices:["I am reading a book","I am writing a book","I am buying a book"], answer:0, tense:"present_continuous" },
+  { audio:"She went to the market.", choices:["She goes to the market","She went to the market","She is going to the market"], answer:1, tense:"past_simple" },
+  { audio:"He is sleeping now.", choices:["He is sleeping now","He slept now","He sleeps now"], answer:0, tense:"present_continuous" },
+  { audio:"We played basketball yesterday.", choices:["We play basketball","We played basketball yesterday","We are playing basketball"], answer:1, tense:"past_simple" },
+  { audio:"The cat is sitting.", choices:["The cat is sitting","The cat sat","The cat sits"], answer:0, tense:"present_continuous" },
+  { audio:"Tom likes coffee.", choices:["Tom likes coffee","Tom liked coffee","Tom is liking coffee"], answer:0, tense:"present_simple" },
+  { audio:"She cooked dinner.", choices:["She cooks dinner","She cooked dinner","She is cooking dinner"], answer:1, tense:"past_simple" },
+  { audio:"They are dancing.", choices:["They danced","They dance","They are dancing"], answer:2, tense:"present_continuous" },
+  { audio:"I study English.", choices:["I study English","I studied English","I am studying English"], answer:0, tense:"present_simple" },
+  { audio:"He woke up early.", choices:["He wakes up early","He is waking up early","He woke up early"], answer:2, tense:"past_simple" },
+  { audio:"She is wearing a red dress.", choices:["She is wearing a red dress","She wore a red dress","She wears a red dress"], answer:0, tense:"present_continuous" },
+  { audio:"We eat lunch at noon.", choices:["We ate lunch at noon","We eat lunch at noon","We are eating lunch at noon"], answer:1, tense:"present_simple" },
+  { audio:"He ran to the bus.", choices:["He runs to the bus","He ran to the bus","He is running to the bus"], answer:1, tense:"past_simple" },
+  { audio:"She is writing a letter.", choices:["She writes a letter","She wrote a letter","She is writing a letter"], answer:2, tense:"present_continuous" },
+  { audio:"They visited the museum.", choices:["They visit the museum","They visited the museum","They are visiting the museum"], answer:1, tense:"past_simple" },
+  { audio:"I watch TV every day.", choices:["I watched TV every day","I watch TV every day","I am watching TV every day"], answer:1, tense:"present_simple" },
+  { audio:"He is playing the piano.", choices:["He plays the piano","He played the piano","He is playing the piano"], answer:2, tense:"present_continuous" },
+  { audio:"She bought a new bag.", choices:["She buys a new bag","She is buying a new bag","She bought a new bag"], answer:2, tense:"past_simple" },
+  { audio:"The dog runs fast.", choices:["The dog ran fast","The dog runs fast","The dog is running fast"], answer:1, tense:"present_simple" },
+  { audio:"They are having lunch.", choices:["They had lunch","They are having lunch","They have lunch"], answer:1, tense:"present_continuous" },
+  { audio:"I cleaned my room.", choices:["I clean my room","I am cleaning my room","I cleaned my room"], answer:2, tense:"past_simple" },
+  { audio:"She sings every morning.", choices:["She sang every morning","She is singing every morning","She sings every morning"], answer:2, tense:"present_simple" },
+  { audio:"He is driving a car.", choices:["He drove a car","He drives a car","He is driving a car"], answer:2, tense:"present_continuous" },
+  { audio:"We went to the beach.", choices:["We go to the beach","We are going to the beach","We went to the beach"], answer:2, tense:"past_simple" },
+  { audio:"She teaches English.", choices:["She taught English","She teaches English","She is teaching English"], answer:1, tense:"present_simple" },
+  { audio:"They are building a house.", choices:["They built a house","They are building a house","They build a house"], answer:1, tense:"present_continuous" },
+  { audio:"He spoke to the teacher.", choices:["He speaks to the teacher","He is speaking to the teacher","He spoke to the teacher"], answer:2, tense:"past_simple" },
+  { audio:"I love chocolate cake.", choices:["I love chocolate cake","I loved chocolate cake","I am loving chocolate cake"], answer:0, tense:"present_simple" },
+  { audio:"She is painting a picture.", choices:["She paints a picture","She is painting a picture","She painted a picture"], answer:1, tense:"present_continuous" },
+  { audio:"They walked to the park.", choices:["They walk to the park","They are walking to the park","They walked to the park"], answer:2, tense:"past_simple" },
+  { audio:"He drinks tea in the morning.", choices:["He drank tea in the morning","He is drinking tea in the morning","He drinks tea in the morning"], answer:2, tense:"present_simple" },
+  { audio:"She is opening the window.", choices:["She opens the window","She opened the window","She is opening the window"], answer:2, tense:"present_continuous" },
+  { audio:"We saw a movie last night.", choices:["We see a movie last night","We are seeing a movie last night","We saw a movie last night"], answer:2, tense:"past_simple" },
+  { audio:"The baby sleeps a lot.", choices:["The baby is sleeping a lot","The baby slept a lot","The baby sleeps a lot"], answer:2, tense:"present_simple" },
+  { audio:"They are singing a song.", choices:["They sang a song","They sing a song","They are singing a song"], answer:2, tense:"present_continuous" },
+  { audio:"She finished her homework.", choices:["She finishes her homework","She finished her homework","She is finishing her homework"], answer:1, tense:"past_simple" },
+  { audio:"He works at a hospital.", choices:["He worked at a hospital","He is working at a hospital","He works at a hospital"], answer:2, tense:"present_simple" },
+  { audio:"I am cooking dinner now.", choices:["I cook dinner now","I cooked dinner now","I am cooking dinner now"], answer:2, tense:"present_continuous" },
+  { audio:"She wrote a long letter.", choices:["She writes a long letter","She is writing a long letter","She wrote a long letter"], answer:2, tense:"past_simple" },
+  { audio:"They play in the garden.", choices:["They played in the garden","They play in the garden","They are playing in the garden"], answer:1, tense:"present_simple" },
+  { audio:"He is reading the news.", choices:["He reads the news","He read the news","He is reading the news"], answer:2, tense:"present_continuous" },
+  { audio:"We moved to a new city.", choices:["We move to a new city","We are moving to a new city","We moved to a new city"], answer:2, tense:"past_simple" },
+  { audio:"She helps her mother.", choices:["She helped her mother","She is helping her mother","She helps her mother"], answer:2, tense:"present_simple" },
+  { audio:"He is fixing the bicycle.", choices:["He fixed the bicycle","He fixes the bicycle","He is fixing the bicycle"], answer:2, tense:"present_continuous" },
+  { audio:"They ate pizza for dinner.", choices:["They eat pizza for dinner","They are eating pizza for dinner","They ate pizza for dinner"], answer:2, tense:"past_simple" },
+  { audio:"I drink coffee in the morning.", choices:["I am drinking coffee in the morning","I drank coffee in the morning","I drink coffee in the morning"], answer:2, tense:"present_simple" },
+  { audio:"She is washing the dishes.", choices:["She washes the dishes","She washed the dishes","She is washing the dishes"], answer:2, tense:"present_continuous" },
+  { audio:"He passed the exam.", choices:["He passes the exam","He is passing the exam","He passed the exam"], answer:2, tense:"past_simple" },
+  { audio:"The children play outside.", choices:["The children played outside","The children are playing outside","The children play outside"], answer:2, tense:"present_simple" },
+  { audio:"She is learning French.", choices:["She learned French","She learns French","She is learning French"], answer:2, tense:"present_continuous" },
+  { audio:"We visited our grandparents.", choices:["We visit our grandparents","We are visiting our grandparents","We visited our grandparents"], answer:2, tense:"past_simple" },
+  { audio:"He takes the bus to work.", choices:["He took the bus to work","He is taking the bus to work","He takes the bus to work"], answer:2, tense:"present_simple" },
+  { audio:"They are watching a film.", choices:["They watched a film","They watch a film","They are watching a film"], answer:2, tense:"present_continuous" },
+  { audio:"She forgot her umbrella.", choices:["She forgets her umbrella","She is forgetting her umbrella","She forgot her umbrella"], answer:2, tense:"past_simple" },
+  { audio:"I enjoy reading books.", choices:["I enjoyed reading books","I am enjoying reading books","I enjoy reading books"], answer:2, tense:"present_simple" },
+  { audio:"He is talking on the phone.", choices:["He talks on the phone","He talked on the phone","He is talking on the phone"], answer:2, tense:"present_continuous" },
+  { audio:"They missed the train.", choices:["They miss the train","They are missing the train","They missed the train"], answer:2, tense:"past_simple" },
+];
+
+/* ============================================================
+   DATA: MODE 3 — GRAMMAR LISTENING (60 questions)
+   ============================================================ */
+const mode3Data = [
+  { audio:"She is reading a book.", question:"Which sentence did you hear?", choices:["She reads a book","She is reading a book","She read a book"], answer:1, tense:"present_continuous" },
+  { audio:"He goes to work every day.", question:"Which sentence did you hear?", choices:["He went to work every day","He goes to work every day","He is going to work every day"], answer:1, tense:"present_simple" },
+  { audio:"They played football yesterday.", question:"Which sentence did you hear?", choices:["They play football yesterday","They played football yesterday","They are playing football yesterday"], answer:1, tense:"past_simple" },
+  { audio:"She is cooking in the kitchen.", question:"Which sentence did you hear?", choices:["She cooks in the kitchen","She cooked in the kitchen","She is cooking in the kitchen"], answer:2, tense:"present_continuous" },
+  { audio:"I eat breakfast every morning.", question:"Which sentence did you hear?", choices:["I ate breakfast every morning","I am eating breakfast every morning","I eat breakfast every morning"], answer:2, tense:"present_simple" },
+  { audio:"He studied hard last night.", question:"Which sentence did you hear?", choices:["He studies hard last night","He is studying hard last night","He studied hard last night"], answer:2, tense:"past_simple" },
+  { audio:"We are watching television.", question:"Which sentence did you hear?", choices:["We watch television","We watched television","We are watching television"], answer:2, tense:"present_continuous" },
+  { audio:"She writes in her diary.", question:"Which sentence did you hear?", choices:["She is writing in her diary","She wrote in her diary","She writes in her diary"], answer:2, tense:"present_simple" },
+  { audio:"They went to the cinema.", question:"Which sentence did you hear?", choices:["They go to the cinema","They are going to the cinema","They went to the cinema"], answer:2, tense:"past_simple" },
+  { audio:"He is running in the park.", question:"Which sentence did you hear?", choices:["He ran in the park","He runs in the park","He is running in the park"], answer:2, tense:"present_continuous" },
+  { audio:"She finished the project.", question:"Which sentence did you hear?", choices:["She finishes the project","She is finishing the project","She finished the project"], answer:2, tense:"past_simple" },
+  { audio:"I work at a school.", question:"Which sentence did you hear?", choices:["I am working at a school","I worked at a school","I work at a school"], answer:2, tense:"present_simple" },
+  { audio:"They are swimming in the pool.", question:"Which sentence did you hear?", choices:["They swim in the pool","They swam in the pool","They are swimming in the pool"], answer:2, tense:"present_continuous" },
+  { audio:"He bought a new phone.", question:"Which sentence did you hear?", choices:["He buys a new phone","He is buying a new phone","He bought a new phone"], answer:2, tense:"past_simple" },
+  { audio:"She loves her job.", question:"Which sentence did you hear?", choices:["She loved her job","She is loving her job","She loves her job"], answer:2, tense:"present_simple" },
+  { audio:"We are having a meeting.", question:"Which sentence did you hear?", choices:["We had a meeting","We have a meeting","We are having a meeting"], answer:2, tense:"present_continuous" },
+  { audio:"He met his friend at school.", question:"Which sentence did you hear?", choices:["He meets his friend at school","He is meeting his friend at school","He met his friend at school"], answer:2, tense:"past_simple" },
+  { audio:"She listens to music every evening.", question:"Which sentence did you hear?", choices:["She listened to music every evening","She is listening to music every evening","She listens to music every evening"], answer:2, tense:"present_simple" },
+  { audio:"They are building a new school.", question:"Which sentence did you hear?", choices:["They build a new school","They built a new school","They are building a new school"], answer:2, tense:"present_continuous" },
+  { audio:"I saw a rainbow this morning.", question:"Which sentence did you hear?", choices:["I see a rainbow this morning","I am seeing a rainbow this morning","I saw a rainbow this morning"], answer:2, tense:"past_simple" },
+  { audio:"She teaches math.", question:"Which sentence did you hear?", choices:["She taught math","She is teaching math","She teaches math"], answer:2, tense:"present_simple" },
+  { audio:"He is eating a sandwich.", question:"Which sentence did you hear?", choices:["He ate a sandwich","He eats a sandwich","He is eating a sandwich"], answer:2, tense:"present_continuous" },
+  { audio:"We visited a farm last weekend.", question:"Which sentence did you hear?", choices:["We visit a farm last weekend","We are visiting a farm last weekend","We visited a farm last weekend"], answer:2, tense:"past_simple" },
+  { audio:"The sun rises in the east.", question:"Which sentence did you hear?", choices:["The sun is rising in the east","The sun rose in the east","The sun rises in the east"], answer:2, tense:"present_simple" },
+  { audio:"She is drinking orange juice.", question:"Which sentence did you hear?", choices:["She drank orange juice","She drinks orange juice","She is drinking orange juice"], answer:2, tense:"present_continuous" },
+  { audio:"He lost his keys yesterday.", question:"Which sentence did you hear?", choices:["He loses his keys yesterday","He is losing his keys yesterday","He lost his keys yesterday"], answer:2, tense:"past_simple" },
+  { audio:"They grow vegetables in their garden.", question:"Which sentence did you hear?", choices:["They are growing vegetables in their garden","They grew vegetables in their garden","They grow vegetables in their garden"], answer:2, tense:"present_simple" },
+  { audio:"I am studying for the test.", question:"Which sentence did you hear?", choices:["I study for the test","I studied for the test","I am studying for the test"], answer:2, tense:"present_continuous" },
+  { audio:"She called her mother.", question:"Which sentence did you hear?", choices:["She calls her mother","She is calling her mother","She called her mother"], answer:2, tense:"past_simple" },
+  { audio:"He speaks three languages.", question:"Which sentence did you hear?", choices:["He is speaking three languages","He spoke three languages","He speaks three languages"], answer:2, tense:"present_simple" },
+  { audio:"They are cleaning the house.", question:"Which sentence did you hear?", choices:["They cleaned the house","They clean the house","They are cleaning the house"], answer:2, tense:"present_continuous" },
+  { audio:"She forgot her password.", question:"Which sentence did you hear?", choices:["She forgets her password","She is forgetting her password","She forgot her password"], answer:2, tense:"past_simple" },
+  { audio:"We sleep early on school nights.", question:"Which sentence did you hear?", choices:["We slept early on school nights","We are sleeping early on school nights","We sleep early on school nights"], answer:2, tense:"present_simple" },
+  { audio:"He is fixing the car.", question:"Which sentence did you hear?", choices:["He fixed the car","He fixes the car","He is fixing the car"], answer:2, tense:"present_continuous" },
+  { audio:"She took a taxi home.", question:"Which sentence did you hear?", choices:["She takes a taxi home","She is taking a taxi home","She took a taxi home"], answer:2, tense:"past_simple" },
+  { audio:"I read every night before bed.", question:"Which sentence did you hear?", choices:["I am reading every night before bed","I read every night before bed","I read every night before bed"], answer:1, tense:"present_simple" },
+  { audio:"They are playing chess.", question:"Which sentence did you hear?", choices:["They played chess","They play chess","They are playing chess"], answer:2, tense:"present_continuous" },
+  { audio:"He arrived at the airport.", question:"Which sentence did you hear?", choices:["He arrives at the airport","He is arriving at the airport","He arrived at the airport"], answer:2, tense:"past_simple" },
+  { audio:"She runs five kilometres daily.", question:"Which sentence did you hear?", choices:["She ran five kilometres daily","She is running five kilometres daily","She runs five kilometres daily"], answer:2, tense:"present_simple" },
+  { audio:"We are planning a trip.", question:"Which sentence did you hear?", choices:["We plan a trip","We planned a trip","We are planning a trip"], answer:2, tense:"present_continuous" },
+  { audio:"He dropped his phone.", question:"Which sentence did you hear?", choices:["He drops his phone","He is dropping his phone","He dropped his phone"], answer:2, tense:"past_simple" },
+  { audio:"She always smiles at everyone.", question:"Which sentence did you hear?", choices:["She is always smiling at everyone","She always smiled at everyone","She always smiles at everyone"], answer:2, tense:"present_simple" },
+  { audio:"They are waiting for the bus.", question:"Which sentence did you hear?", choices:["They waited for the bus","They wait for the bus","They are waiting for the bus"], answer:2, tense:"present_continuous" },
+  { audio:"I gave her a birthday gift.", question:"Which sentence did you hear?", choices:["I give her a birthday gift","I am giving her a birthday gift","I gave her a birthday gift"], answer:2, tense:"past_simple" },
+  { audio:"He knows the answer.", question:"Which sentence did you hear?", choices:["He knew the answer","He is knowing the answer","He knows the answer"], answer:2, tense:"present_simple" },
+  { audio:"She is watering the plants.", question:"Which sentence did you hear?", choices:["She waters the plants","She watered the plants","She is watering the plants"], answer:2, tense:"present_continuous" },
+  { audio:"We opened the new shop.", question:"Which sentence did you hear?", choices:["We open the new shop","We are opening the new shop","We opened the new shop"], answer:2, tense:"past_simple" },
+  { audio:"She lives near the school.", question:"Which sentence did you hear?", choices:["She lived near the school","She is living near the school","She lives near the school"], answer:2, tense:"present_simple" },
+  { audio:"He is typing a report.", question:"Which sentence did you hear?", choices:["He typed a report","He types a report","He is typing a report"], answer:2, tense:"present_continuous" },
+  { audio:"They walked along the river.", question:"Which sentence did you hear?", choices:["They walk along the river","They are walking along the river","They walked along the river"], answer:2, tense:"past_simple" },
+  { audio:"I understand the lesson.", question:"Which sentence did you hear?", choices:["I understood the lesson","I am understanding the lesson","I understand the lesson"], answer:2, tense:"present_simple" },
+  { audio:"She is drawing a portrait.", question:"Which sentence did you hear?", choices:["She drew a portrait","She draws a portrait","She is drawing a portrait"], answer:2, tense:"present_continuous" },
+  { audio:"He sent an email this morning.", question:"Which sentence did you hear?", choices:["He sends an email this morning","He is sending an email this morning","He sent an email this morning"], answer:2, tense:"past_simple" },
+  { audio:"We celebrate birthdays together.", question:"Which sentence did you hear?", choices:["We celebrated birthdays together","We are celebrating birthdays together","We celebrate birthdays together"], answer:2, tense:"present_simple" },
+  { audio:"They are doing their homework.", question:"Which sentence did you hear?", choices:["They did their homework","They do their homework","They are doing their homework"], answer:2, tense:"present_continuous" },
+  { audio:"She missed the morning class.", question:"Which sentence did you hear?", choices:["She misses the morning class","She is missing the morning class","She missed the morning class"], answer:2, tense:"past_simple" },
+  { audio:"He plays guitar in a band.", question:"Which sentence did you hear?", choices:["He is playing guitar in a band","He played guitar in a band","He plays guitar in a band"], answer:2, tense:"present_simple" },
+  { audio:"I am writing a story.", question:"Which sentence did you hear?", choices:["I wrote a story","I write a story","I am writing a story"], answer:2, tense:"present_continuous" },
+  { audio:"She caught a big fish.", question:"Which sentence did you hear?", choices:["She catches a big fish","She is catching a big fish","She caught a big fish"], answer:2, tense:"past_simple" },
+  { audio:"They enjoy hiking on weekends.", question:"Which sentence did you hear?", choices:["They enjoyed hiking on weekends","They are enjoying hiking on weekends","They enjoy hiking on weekends"], answer:2, tense:"present_simple" },
+];
+
+/* ============================================================
+   DATA: MODE 4 — DIALOGUE LISTENING (40 dialogues)
+   ============================================================ */
+const mode4Data = [
+  {
+    audio:"Person A: Where are you going? Person B: I am going to school.",
+    question:"Where is Person B going?",
+    choices:["He is going to school","He is going home","He is going to the store"],
+    answer:0
+  },
+  {
+    audio:"Person A: What did you eat? Person B: I ate rice and vegetables.",
+    question:"What did Person B eat?",
+    choices:["Rice and vegetables","Bread and butter","Soup and noodles"],
+    answer:0
+  },
+  {
+    audio:"Person A: Are you studying now? Person B: Yes, I am studying English.",
+    question:"What is Person B studying?",
+    choices:["Mathematics","English","Science"],
+    answer:1
+  },
+  {
+    audio:"Person A: Where did you go yesterday? Person B: I went to the hospital.",
+    question:"Where did Person B go?",
+    choices:["To the park","To the market","To the hospital"],
+    answer:2
+  },
+  {
+    audio:"Person A: What time do you wake up? Person B: I wake up at six o'clock.",
+    question:"What time does Person B wake up?",
+    choices:["At seven o'clock","At six o'clock","At eight o'clock"],
+    answer:1
+  },
+  {
+    audio:"Person A: What are you doing? Person B: I am cooking lunch.",
+    question:"What is Person B doing?",
+    choices:["He is eating lunch","He is cooking lunch","He is buying lunch"],
+    answer:1
+  },
+  {
+    audio:"Person A: Did she pass the test? Person B: Yes, she passed with a high score.",
+    question:"How did she do on the test?",
+    choices:["She failed","She passed with a high score","She did not take the test"],
+    answer:1
+  },
+  {
+    audio:"Person A: Is he at home? Person B: No, he is at the office.",
+    question:"Where is he?",
+    choices:["At home","At school","At the office"],
+    answer:2
+  },
+  {
+    audio:"Person A: Do you like coffee? Person B: No, I prefer tea.",
+    question:"What does Person B prefer?",
+    choices:["Coffee","Tea","Juice"],
+    answer:1
+  },
+  {
+    audio:"Person A: What did they do last Sunday? Person B: They visited their grandmother.",
+    question:"What did they do last Sunday?",
+    choices:["They watched a movie","They visited their grandmother","They played football"],
+    answer:1
+  },
+  {
+    audio:"Person A: Are they playing football? Person B: No, they are swimming.",
+    question:"What are they doing?",
+    choices:["Playing football","Swimming","Running"],
+    answer:1
+  },
+  {
+    audio:"Person A: Where does she live? Person B: She lives near the school.",
+    question:"Where does she live?",
+    choices:["Near the hospital","Near the market","Near the school"],
+    answer:2
+  },
+  {
+    audio:"Person A: Did you call her? Person B: Yes, I called her this morning.",
+    question:"When did Person B call her?",
+    choices:["Last night","In the afternoon","This morning"],
+    answer:2
+  },
+  {
+    audio:"Person A: What is he reading? Person B: He is reading a newspaper.",
+    question:"What is he reading?",
+    choices:["A magazine","A newspaper","A textbook"],
+    answer:1
+  },
+  {
+    audio:"Person A: Did they buy a car? Person B: No, they bought a bicycle.",
+    question:"What did they buy?",
+    choices:["A car","A motorcycle","A bicycle"],
+    answer:2
+  },
+  {
+    audio:"Person A: Where is she going? Person B: She is going to the library.",
+    question:"Where is she going?",
+    choices:["To the cinema","To the library","To the gym"],
+    answer:1
+  },
+  {
+    audio:"Person A: Do they work here? Person B: No, they work at the hospital.",
+    question:"Where do they work?",
+    choices:["At the school","At the library","At the hospital"],
+    answer:2
+  },
+  {
+    audio:"Person A: What are you cooking? Person B: I am cooking soup.",
+    question:"What is Person B cooking?",
+    choices:["Soup","Rice","Noodles"],
+    answer:0
+  },
+  {
+    audio:"Person A: Did he win the game? Person B: Yes, he won the game.",
+    question:"What happened in the game?",
+    choices:["He lost","He won","He did not play"],
+    answer:1
+  },
+  {
+    audio:"Person A: Is she sleeping? Person B: No, she is watching television.",
+    question:"What is she doing?",
+    choices:["Sleeping","Cooking","Watching television"],
+    answer:2
+  },
+  {
+    audio:"Person A: What did you buy? Person B: I bought some fruit and vegetables.",
+    question:"What did Person B buy?",
+    choices:["Some meat and fish","Some fruit and vegetables","Some bread and milk"],
+    answer:1
+  },
+  {
+    audio:"Person A: Where is Tom? Person B: He is sitting in the garden.",
+    question:"Where is Tom?",
+    choices:["In the kitchen","In the garden","In the bedroom"],
+    answer:1
+  },
+  {
+    audio:"Person A: Do you exercise every day? Person B: Yes, I run every morning.",
+    question:"What does Person B do every morning?",
+    choices:["He swims","He runs","He cycles"],
+    answer:1
+  },
+  {
+    audio:"Person A: What did she study? Person B: She studied music at university.",
+    question:"What did she study?",
+    choices:["Art","Science","Music"],
+    answer:2
+  },
+  {
+    audio:"Person A: Are you coming to the party? Person B: Yes, I am coming with my family.",
+    question:"Who is Person B coming with?",
+    choices:["With friends","With colleagues","With family"],
+    answer:2
+  },
+  {
+    audio:"Person A: Does he speak French? Person B: No, he speaks Spanish.",
+    question:"What language does he speak?",
+    choices:["French","English","Spanish"],
+    answer:2
+  },
+  {
+    audio:"Person A: What time did the film start? Person B: It started at eight o'clock.",
+    question:"What time did the film start?",
+    choices:["Seven o'clock","Eight o'clock","Nine o'clock"],
+    answer:1
+  },
+  {
+    audio:"Person A: Is she learning to drive? Person B: Yes, she is practising every weekend.",
+    question:"When does she practise?",
+    choices:["Every day","Every weekday","Every weekend"],
+    answer:2
+  },
+  {
+    audio:"Person A: Did they enjoy the food? Person B: Yes, they loved it.",
+    question:"How did they feel about the food?",
+    choices:["They disliked it","They loved it","They were not hungry"],
+    answer:1
+  },
+  {
+    audio:"Person A: What are the children doing? Person B: They are playing in the garden.",
+    question:"Where are the children playing?",
+    choices:["In the park","In the street","In the garden"],
+    answer:2
+  },
+  {
+    audio:"Person A: Where did you find your phone? Person B: I found it under the table.",
+    question:"Where did Person B find the phone?",
+    choices:["On the sofa","Under the table","In the bag"],
+    answer:1
+  },
+  {
+    audio:"Person A: Is he working today? Person B: No, he is on holiday.",
+    question:"Why is he not working?",
+    choices:["He is sick","He is on holiday","He finished work"],
+    answer:1
+  },
+  {
+    audio:"Person A: What does she drink every morning? Person B: She drinks a cup of green tea.",
+    question:"What does she drink every morning?",
+    choices:["Black coffee","Orange juice","Green tea"],
+    answer:2
+  },
+  {
+    audio:"Person A: Did he finish his report? Person B: No, he is still writing it.",
+    question:"What is he doing?",
+    choices:["He finished his report","He is reading the report","He is still writing it"],
+    answer:2
+  },
+  {
+    audio:"Person A: Where is the meeting? Person B: It is in the conference room.",
+    question:"Where is the meeting?",
+    choices:["In the office","In the conference room","In the cafeteria"],
+    answer:1
+  },
+  {
+    audio:"Person A: What do they study? Person B: They study computer science.",
+    question:"What do they study?",
+    choices:["Computer science","Business","Medicine"],
+    answer:0
+  },
+  {
+    audio:"Person A: Did she call you? Person B: Yes, she called me last night.",
+    question:"When did she call?",
+    choices:["This morning","Yesterday afternoon","Last night"],
+    answer:2
+  },
+  {
+    audio:"Person A: Is the shop open? Person B: Yes, it opens at nine.",
+    question:"When does the shop open?",
+    choices:["At eight","At nine","At ten"],
+    answer:1
+  },
+  {
+    audio:"Person A: What did he cook? Person B: He cooked pasta and salad.",
+    question:"What did he cook?",
+    choices:["Soup and bread","Rice and chicken","Pasta and salad"],
+    answer:2
+  },
+  {
+    audio:"Person A: Is she at school? Person B: No, she stayed home today.",
+    question:"Where is she today?",
+    choices:["At school","At work","At home"],
+    answer:2
+  },
+];
+
+/* ============================================================
+   DATA: MODE 5 — PARAGRAPH LISTENING (30 paragraphs)
+   ============================================================ */
+const mode5Data = [
+  {
+    audio:"Tom went to the park yesterday. He played football with his friends. They were very happy.",
+    question:"What did Tom do yesterday?",
+    choices:["He played football","He went to school","He watched TV"],
+    answer:0
+  },
+  {
+    audio:"Mary is sitting in the library. She is reading a very long book. She is enjoying it.",
+    question:"Where is Mary?",
+    choices:["In the classroom","In the library","In the garden"],
+    answer:1
+  },
+  {
+    audio:"The children wake up early every day. They eat breakfast together. Then they go to school.",
+    question:"What do the children do first?",
+    choices:["They go to school","They eat breakfast","They wake up early"],
+    answer:2
+  },
+  {
+    audio:"Lisa cooked a big dinner last Sunday. She invited all her friends. Everyone enjoyed the food.",
+    question:"What did Lisa do last Sunday?",
+    choices:["She went to a restaurant","She cooked a big dinner","She ordered pizza"],
+    answer:1
+  },
+  {
+    audio:"John is a teacher. He teaches English at a primary school. He loves his job very much.",
+    question:"What does John teach?",
+    choices:["Mathematics","Science","English"],
+    answer:2
+  },
+  {
+    audio:"They travelled to the mountains last summer. They walked along beautiful trails. They took many photographs.",
+    question:"What did they do on the trails?",
+    choices:["They cycled","They ran","They walked"],
+    answer:2
+  },
+  {
+    audio:"She is working at the hospital now. She takes care of the patients. She is a kind nurse.",
+    question:"What does she do?",
+    choices:["She is a doctor","She is a nurse","She is a teacher"],
+    answer:1
+  },
+  {
+    audio:"Mike studied very hard for the exam. He wrote many notes. He passed with an excellent grade.",
+    question:"How did Mike do on the exam?",
+    choices:["He failed","He got an average grade","He passed with an excellent grade"],
+    answer:2
+  },
+  {
+    audio:"Anna loves animals. She has two cats and one dog. She feeds them every morning.",
+    question:"When does Anna feed her animals?",
+    choices:["In the evening","At night","Every morning"],
+    answer:2
+  },
+  {
+    audio:"Peter is building a treehouse in his garden. He uses wood and nails. His children are helping him.",
+    question:"What is Peter building?",
+    choices:["A garage","A treehouse","A garden wall"],
+    answer:1
+  },
+  {
+    audio:"The students went to the science museum. They saw many interesting exhibits. They learned about space.",
+    question:"What did the students learn about?",
+    choices:["Animals","History","Space"],
+    answer:2
+  },
+  {
+    audio:"She wakes up at six every morning. She runs for thirty minutes. Then she has a healthy breakfast.",
+    question:"How long does she run?",
+    choices:["For twenty minutes","For forty-five minutes","For thirty minutes"],
+    answer:2
+  },
+  {
+    audio:"David is painting the walls of his new house. He chose a light blue colour. The house looks beautiful now.",
+    question:"What colour did David choose?",
+    choices:["White","Light blue","Yellow"],
+    answer:1
+  },
+  {
+    audio:"The team worked together on the project. They discussed ideas every morning. They finished on time.",
+    question:"When did they discuss ideas?",
+    choices:["Every evening","Every morning","Every afternoon"],
+    answer:1
+  },
+  {
+    audio:"She studied French for three years. She visited Paris last year. She spoke French with local people.",
+    question:"Where did she visit last year?",
+    choices:["London","Rome","Paris"],
+    answer:2
+  },
+  {
+    audio:"He is travelling through Asia. He visited Vietnam, Thailand and Japan. He is enjoying every country.",
+    question:"Which countries did he visit?",
+    choices:["Vietnam, China and Korea","Vietnam, Thailand and Japan","Thailand, Japan and India"],
+    answer:1
+  },
+  {
+    audio:"The children are playing in the park. Some are running. Others are riding their bicycles.",
+    question:"What are some children doing in the park?",
+    choices:["Swimming","Running and riding bicycles","Playing football"],
+    answer:1
+  },
+  {
+    audio:"She opened a small bakery last year. She sells bread and cakes every day. The shop is very popular.",
+    question:"When did she open the bakery?",
+    choices:["Last month","Two years ago","Last year"],
+    answer:2
+  },
+  {
+    audio:"He woke up late this morning. He missed breakfast. He ran to catch the bus.",
+    question:"Why did he run?",
+    choices:["To go to the gym","To catch the bus","To meet a friend"],
+    answer:1
+  },
+  {
+    audio:"The family is planning a picnic. They are preparing sandwiches and fruit. They are looking for a nice park.",
+    question:"What are they preparing?",
+    choices:["Pizza and drinks","Sandwiches and fruit","Rice and vegetables"],
+    answer:1
+  },
+  {
+    audio:"Tom works in a technology company. He designs websites for clients. He enjoys creative work.",
+    question:"What does Tom design?",
+    choices:["Mobile apps","Computer games","Websites"],
+    answer:2
+  },
+  {
+    audio:"She was very tired yesterday. She came home and went straight to bed. She slept for ten hours.",
+    question:"How many hours did she sleep?",
+    choices:["Eight hours","Nine hours","Ten hours"],
+    answer:2
+  },
+  {
+    audio:"The school is organising a sports day. Students are practising running and jumping. The event is next Friday.",
+    question:"When is the sports day?",
+    choices:["Next Monday","Next Wednesday","Next Friday"],
+    answer:2
+  },
+  {
+    audio:"He learns English online every evening. He watches English films and reads articles. His English is improving quickly.",
+    question:"What does he use to learn English?",
+    choices:["Books only","Films and articles","A private teacher"],
+    answer:1
+  },
+  {
+    audio:"She received a letter from her friend in Australia. She read it twice because she was very happy. She wrote a long reply.",
+    question:"What did she do with the letter?",
+    choices:["She threw it away","She lost it","She read it twice and wrote a reply"],
+    answer:2
+  },
+  {
+    audio:"They are planting vegetables in the garden. They planted tomatoes and cucumbers yesterday. They water them every morning.",
+    question:"What vegetables did they plant yesterday?",
+    choices:["Carrots and potatoes","Tomatoes and cucumbers","Peppers and onions"],
+    answer:1
+  },
+  {
+    audio:"He gave a speech at the school ceremony. He talked about the importance of education. Everyone listened carefully.",
+    question:"What did he talk about?",
+    choices:["The importance of sports","The importance of friendship","The importance of education"],
+    answer:2
+  },
+  {
+    audio:"Mary is studying for her final exams. She is sitting at her desk and taking notes. She is feeling nervous but confident.",
+    question:"How does Mary feel?",
+    choices:["Nervous and confident","Calm and relaxed","Tired and confused"],
+    answer:0
+  },
+  {
+    audio:"The weather was cold last winter. Many people stayed inside their houses. Children played board games instead of going outside.",
+    question:"What did children do during the cold winter?",
+    choices:["They played in the snow","They went to the park","They played board games at home"],
+    answer:2
+  },
+  {
+    audio:"She is working on an important project at the office. She is meeting clients and writing reports. She is very busy this week.",
+    question:"What is she doing at the office?",
+    choices:["Meeting clients and writing reports","Teaching and lecturing","Designing and painting"],
+    answer:0
+  },
+];
+
+/* ============================================================
+   GAME STATE
+   ============================================================ */
+let currentMode = 1;
+let currentDifficulty = 'beginner';
+let currentData = [];
+let questionQueue = [];
+let currentIndex = 0;
+let currentQuestion = null;
+let score = { correct: 0, wrong: 0, streak: 0 };
+let mistakeCount = 0;
+let answered = false;
+let speechRate = 0.9;
+let autoplayEnabled = true;
+let lastSentence = '';
+let totalQuestions = 10;
+let synth = window.speechSynthesis;
+
+const modeLabels = ['','Word Listening','Simple Sentences','Grammar Focus','Dialogues','Paragraphs'];
+
+/* ============================================================
+   DIFFICULTY SELECTION
+   ============================================================ */
+function setDiff(d) {
+  currentDifficulty = d;
+  document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+}
+
+/* ============================================================
+   SCREEN MANAGEMENT
+   ============================================================ */
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById('screen-' + id).classList.add('active');
+  const footer = document.getElementById('main-footer');
+  footer.style.display = (id === 'result') ? 'none' : 'block';
+}
+
+function goMenu() {
+  synth.cancel();
+  showScreen('menu');
+}
+
+/* ============================================================
+   GAME START
+   ============================================================ */
+function startGame(mode) {
+  currentMode = mode;
+
+  let rawData;
+  if (mode === 1) rawData = mode1Data;
+  else if (mode === 2) rawData = mode2Data;
+  else if (mode === 3) rawData = mode3Data;
+  else if (mode === 4) rawData = mode4Data;
+  else rawData = mode5Data;
+
+  // Filter by difficulty if needed (use all for simplicity, set question count)
+  totalQuestions = (mode === 1) ? 10 : (mode === 5) ? 10 : 15;
+  if (currentDifficulty === 'intermediate') totalQuestions = Math.round(totalQuestions * 1.2);
+  if (currentDifficulty === 'advanced') totalQuestions = Math.round(totalQuestions * 1.5);
+  totalQuestions = Math.min(totalQuestions, rawData.length);
+
+  // Shuffle and pick
+  questionQueue = shuffle([...rawData]).slice(0, totalQuestions);
+  currentIndex = 0;
+  score = { correct: 0, wrong: 0, streak: 0 };
+  updateScoreUI();
+  document.getElementById('mode-label').textContent = modeLabels[mode];
+  showScreen('game');
+  loadQuestion();
+}
+
+function restartGame() {
+  startGame(currentMode);
+}
+
+/* ============================================================
+   QUESTION LOADING
+   ============================================================ */
+function loadQuestion() {
+  answered = false;
+  mistakeCount = 0;
+  document.getElementById('next-btn').style.display = 'none';
+  document.getElementById('hint-box').classList.remove('show');
+  document.getElementById('feedback-banner').classList.remove('show');
+
+  const pct = (currentIndex / totalQuestions) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `Question ${currentIndex + 1} of ${totalQuestions}`;
+
+  currentQuestion = questionQueue[currentIndex];
+
+  // Set question text
+  if (currentMode === 1) {
+    document.getElementById('question-text').textContent = '🔊 Listen and choose the word you hear.';
+  } else if (currentMode === 3) {
+    document.getElementById('question-text').textContent = currentQuestion.question || 'Which sentence did you hear?';
+  } else if (currentMode === 4) {
+    document.getElementById('question-text').textContent = currentQuestion.question;
+  } else if (currentMode === 5) {
+    document.getElementById('question-text').textContent = currentQuestion.question;
+  } else {
+    document.getElementById('question-text').textContent = '🔊 Listen and choose the correct sentence.';
+  }
+
+  // Tense badge
+  const badge = document.getElementById('tense-badge');
+  if (currentQuestion.tense) {
+    badge.style.display = 'inline-block';
+    const tenseMap = {
+      present_simple: 'Present Simple',
+      present_continuous: 'Present Continuous',
+      past_simple: 'Past Simple'
+    };
+    badge.textContent = tenseMap[currentQuestion.tense] || currentQuestion.tense;
+  } else {
+    badge.style.display = 'none';
+  }
+
+  // Shuffle choices
+  const shuffled = shuffleChoices(currentQuestion.choices, currentQuestion.answer);
+  renderChoices(shuffled.choices, shuffled.correctIndex);
+
+  if (autoplayEnabled) {
+    setTimeout(() => playAudio(), 600);
+  }
+}
+
+function shuffleChoices(choices, correctIndex) {
+  const indexed = choices.map((c, i) => ({ text: c, isCorrect: i === correctIndex }));
+  for (let i = indexed.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [indexed[i], indexed[j]] = [indexed[j], indexed[i]];
+  }
+  const newCorrect = indexed.findIndex(x => x.isCorrect);
+  return { choices: indexed.map(x => x.text), correctIndex: newCorrect };
+}
+
+function renderChoices(choices, correctIndex) {
+  const wrap = document.getElementById('choices-wrap');
+  wrap.innerHTML = '';
+  const letters = ['A', 'B', 'C', 'D'];
+  choices.forEach((choice, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${choice}</span>`;
+    btn.setAttribute('data-correct', i === correctIndex ? '1' : '0');
+    btn.addEventListener('click', () => handleAnswer(btn, i === correctIndex));
+    btn.addEventListener('touchstart', function(){}, {passive:true}); // Enable fast touch
+    wrap.appendChild(btn);
+  });
+}
+
+/* ============================================================
+   ANSWER HANDLING
+   ============================================================ */
+function handleAnswer(btn, isCorrect) {
+  if (answered) return;
+
+  const allBtns = document.querySelectorAll('.choice-btn');
+  allBtns.forEach(b => b.disabled = true);
+
+  const feedback = document.getElementById('feedback-banner');
+
+  if (isCorrect) {
+    btn.classList.add('correct');
+    score.correct++;
+    score.streak++;
+    feedback.textContent = '✅ Correct! Well done!';
+    feedback.className = 'feedback-banner correct show';
+    answered = true;
+    updateScoreUI();
+    document.getElementById('next-btn').style.display = 'flex';
+  } else {
+    btn.classList.add('wrong');
+    score.wrong++;
+    score.streak = 0;
+    mistakeCount++;
+    feedback.textContent = '❌ Not quite. Try listening again.';
+    feedback.className = 'feedback-banner wrong show';
+    updateScoreUI();
+
+    if (mistakeCount >= 2) {
+      answered = true;
+      // Show correct answer
+      allBtns.forEach(b => {
+        if (b.getAttribute('data-correct') === '1') {
+          b.classList.add('correct');
+        }
+      });
+      feedback.textContent = '❌ The correct answer is highlighted in green.';
+      document.getElementById('next-btn').style.display = 'flex';
+    } else {
+      // Re-enable for another try
+      setTimeout(() => {
+        allBtns.forEach(b => {
+          if (!b.classList.contains('wrong')) b.disabled = false;
+          else b.disabled = true;
+        });
+        feedback.classList.remove('show');
+      }, 1200);
+    }
+  }
+}
+
+/* ============================================================
+   NEXT QUESTION / END GAME
+   ============================================================ */
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex >= totalQuestions) {
+    showResult();
+  } else {
+    loadQuestion();
+  }
+}
+
+function showResult() {
+  synth.cancel();
+  const total = score.correct + score.wrong;
+  const pct = total > 0 ? Math.round((score.correct / totalQuestions) * 100) : 0;
+  document.getElementById('res-correct').textContent = score.correct;
+  document.getElementById('res-wrong').textContent = score.wrong;
+  document.getElementById('result-score-big').textContent = pct + '%';
+
+  let icon = '🏆', title = 'Excellent!', sub = 'Outstanding performance!';
+  if (pct < 40) { icon = '📚'; title = 'Keep Practising'; sub = 'Listen again and try harder!'; }
+  else if (pct < 60) { icon = '👍'; title = 'Good Effort!'; sub = 'You are improving!'; }
+  else if (pct < 80) { icon = '⭐'; title = 'Well Done!'; sub = 'Great listening skills!'; }
+
+  document.getElementById('result-icon').textContent = icon;
+  document.getElementById('result-title').textContent = title;
+  document.getElementById('result-sub').textContent = sub + ` (${score.correct}/${totalQuestions} correct)`;
+  showScreen('result');
+}
+
+/* ============================================================
+   SCORE UI
+   ============================================================ */
+function updateScoreUI() {
+  document.getElementById('score-correct').textContent = score.correct;
+  document.getElementById('score-wrong').textContent = score.wrong;
+  document.getElementById('score-streak').textContent = score.streak;
+}
+
+/* ============================================================
+   AUDIO — WEB SPEECH API
+   ============================================================ */
+function speakText(text) {
+  synth.cancel();
+  lastSentence = text;
+
+  const utter = new SpeechSynthesisUtterance(text);
+  utter.lang = 'en-US';
+  utter.rate = speechRate;
+  utter.pitch = 1;
+
+  // Show animation
+  setSpeakStatus(true, 'Speaking...');
+  utter.onend = () => setSpeakStatus(false, 'Done. Press Replay to listen again.');
+  utter.onerror = () => setSpeakStatus(false, 'Audio error. Try Replay.');
+
+  synth.speak(utter);
+}
+
+function setSpeakStatus(active, msg) {
+  document.getElementById('speak-anim').classList.toggle('hidden', !active);
+  document.getElementById('speak-text').textContent = msg;
+}
+
+function playAudio() {
+  if (!currentQuestion) return;
+  speakText(currentQuestion.audio);
+}
+
+function replayAudio() {
+  playAudio();
+}
+
+function repeatLast() {
+  if (lastSentence) speakText(lastSentence);
+}
+
+function updateSpeed(val) {
+  speechRate = parseFloat(val);
+  document.getElementById('speed-display').textContent = speechRate.toFixed(2) + '×';
+}
+
+function toggleAutoplay() {
+  autoplayEnabled = document.getElementById('autoplay-toggle').checked;
+}
+
+/* ============================================================
+   HINT SYSTEM
+   ============================================================ */
+function showHint() {
+  if (!currentQuestion) return;
+  const hints = {
+    present_simple: 'Hint: Present Simple uses the base form of the verb (e.g., goes, plays, eats).',
+    present_continuous: 'Hint: Present Continuous uses "am/is/are + verb-ing".',
+    past_simple: 'Hint: Past Simple uses the past form (e.g., went, played, ate).',
+  };
+  let hintText = hints[currentQuestion.tense] || 'Hint: Listen carefully to the key words in the sentence.';
+  document.getElementById('hint-text').textContent = hintText;
+  document.getElementById('hint-box').classList.add('show');
+}
+
+/* ============================================================
+   UTILITIES
+   ============================================================ */
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', function() {
+  showScreen('menu');
+  // Warm up speech synthesis
+  window.speechSynthesis.getVoices();
+});
+
+// Handle Android Chrome bug where speechSynthesis stops after 15s
+setInterval(function() {
+  if (synth.speaking) {
+    synth.pause();
+    synth.resume();
+  }
+}, 10000);
+</script>
+
+</body>
+</html>
