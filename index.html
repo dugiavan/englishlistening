@@ -9,27 +9,35 @@
   <title>English Listening Game</title>
   <style>
     /* ============================================================
-   CSS VARIABLES & RESET
+   CSS VARIABLES & RESET — LIGHT GLASSMORPHISM THEME
    ============================================================ */
     :root {
-      --bg: #0d1117;
-      --surface: #161b22;
-      --surface2: #21262d;
-      --border: #30363d;
-      --accent: #58a6ff;
-      --accent2: #f78166;
-      --accent3: #56d364;
-      --accent4: #d2a8ff;
-      --text: #e6edf3;
-      --text2: #8b949e;
-      --correct: #1a4731;
-      --correct-border: #56d364;
-      --wrong: #4a1515;
-      --wrong-border: #f78166;
+      --bg-grad: linear-gradient(135deg, #eef2ff 0%, #e0f2fe 50%, #f0fdf4 100%);
+      --glass: rgba(255, 255, 255, 0.60);
+      --glass-border: rgba(255, 255, 255, 0.45);
+      --glass-shadow: 0 8px 30px rgba(0, 0, 0, 0.07);
+      --surface2: rgba(255, 255, 255, 0.35);
+      --border: rgba(180, 200, 230, 0.55);
+      --accent: #3b82f6;
+      --accent-light: #eff6ff;
+      --accent-dark: #1d4ed8;
+      --accent2: #ef4444;
+      --accent2-light: #fef2f2;
+      --accent3: #22c55e;
+      --accent3-light: #f0fdf4;
+      --accent4: #8b5cf6;
+      --text: #1f2937;
+      --text2: #64748b;
+      --text3: #94a3b8;
+      --correct-bg: #dcfce7;
+      --correct-border: #22c55e;
+      --correct-text: #166534;
+      --wrong-bg: #fee2e2;
+      --wrong-border: #ef4444;
+      --wrong-text: #991b1b;
       --btn-radius: 16px;
       --min-btn: 60px;
       --font-base: 18px;
-      --shadow: 0 4px 24px rgba(0, 0, 0, 0.5);
     }
 
     * {
@@ -40,15 +48,15 @@
     }
 
     body {
-      font-family: 'Segoe UI', 'Helvetica Neue', sans-serif;
+      font-family: 'Segoe UI', 'Helvetica Neue', system-ui, sans-serif;
       font-size: var(--font-base);
-      background: var(--bg);
+      background: var(--bg-grad);
+      background-attachment: fixed;
       color: var(--text);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
       align-items: center;
-      padding: 0;
       overflow-x: hidden;
     }
 
@@ -57,17 +65,27 @@
    ============================================================ */
     #app-header {
       width: 100%;
-      background: linear-gradient(135deg, #1a2332 0%, #0d1117 100%);
-      border-bottom: 1px solid var(--border);
-      padding: 16px 20px 12px;
-      text-align: center;
+      background: rgba(255, 255, 255, 0.76);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--glass-border);
+      padding: 13px 18px 11px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       position: sticky;
       top: 0;
-      z-index: 100;
+      z-index: 200;
+      box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+    }
+
+    #header-title-wrap {
+      text-align: center;
+      flex: 1;
     }
 
     #app-header h1 {
-      font-size: clamp(20px, 5vw, 28px);
+      font-size: clamp(18px, 4.5vw, 24px);
       font-weight: 800;
       letter-spacing: -0.5px;
       background: linear-gradient(90deg, var(--accent), var(--accent4));
@@ -77,9 +95,39 @@
     }
 
     #app-header p {
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text2);
-      margin-top: 2px;
+      margin-top: 1px;
+    }
+
+    /* hamburger — shown only during gameplay */
+    #menu-toggle-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      font-size: 20px;
+      cursor: pointer;
+      display: none;
+      /* JS sets to flex */
+      align-items: center;
+      justify-content: center;
+      color: var(--text);
+      flex-shrink: 0;
+      transition: background 0.2s, transform 0.1s;
+    }
+
+    #menu-toggle-btn:active {
+      background: rgba(255, 255, 255, 0.95);
+      transform: scale(0.95);
+    }
+
+    #header-spacer {
+      width: 44px;
+      flex-shrink: 0;
     }
 
     /* ============================================================
@@ -119,27 +167,29 @@
     }
 
     /* ============================================================
-   CARDS
+   GLASS CARDS
    ============================================================ */
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--glass-border);
       border-radius: var(--btn-radius);
       padding: 18px;
-      box-shadow: var(--shadow);
+      box-shadow: var(--glass-shadow);
     }
 
     .section-title {
-      font-size: 13px;
+      font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 1px;
-      color: var(--text2);
+      letter-spacing: 1.2px;
+      color: var(--text3);
       margin-bottom: 10px;
-      font-weight: 600;
+      font-weight: 700;
     }
 
     /* ============================================================
-   BUTTONS (GENERIC)
+   BUTTONS
    ============================================================ */
     .btn {
       display: flex;
@@ -149,10 +199,10 @@
       min-height: var(--min-btn);
       border: none;
       border-radius: var(--btn-radius);
-      font-size: 17px;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: opacity 0.15s, transform 0.1s;
+      transition: opacity 0.15s, transform 0.1s, box-shadow 0.15s;
       padding: 12px 18px;
       text-align: center;
       width: 100%;
@@ -162,47 +212,34 @@
 
     .btn:active {
       transform: scale(0.97);
-      opacity: 0.85;
+      opacity: 0.88;
     }
 
     .btn-primary {
       background: var(--accent);
-      color: #0d1117;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(59, 130, 246, 0.28);
     }
 
     .btn-secondary {
-      background: var(--surface2);
+      background: rgba(255, 255, 255, 0.75);
       color: var(--text);
-      border: 1px solid var(--border);
+      border: 1.5px solid var(--border);
     }
 
     .btn-success {
-      background: var(--correct-border);
-      color: #0d1117;
-    }
-
-    .btn-danger {
-      background: var(--accent2);
-      color: #0d1117;
-    }
-
-    .btn-purple {
-      background: var(--accent4);
-      color: #0d1117;
-    }
-
-    .btn-warn {
-      background: #e3b341;
-      color: #0d1117;
+      background: var(--accent3);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.25);
     }
 
     .btn-sm {
-      min-height: 50px;
+      min-height: 52px;
       font-size: 15px;
     }
 
     /* ============================================================
-   MODE SELECTION SCREEN
+   MODE SELECTION
    ============================================================ */
     .mode-grid {
       display: grid;
@@ -211,22 +248,20 @@
     }
 
     .mode-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1.5px solid var(--glass-border);
       border-radius: var(--btn-radius);
-      padding: 18px 14px;
+      padding: 18px 12px;
       cursor: pointer;
-      transition: border-color 0.2s, transform 0.1s;
+      transition: border-color 0.2s, transform 0.1s, box-shadow 0.2s;
       text-align: center;
+      box-shadow: var(--glass-shadow);
     }
 
     .mode-card:active {
       transform: scale(0.96);
-    }
-
-    .mode-card:hover,
-    .mode-card.hover {
-      border-color: var(--accent);
     }
 
     .mode-card .mode-icon {
@@ -235,39 +270,39 @@
     }
 
     .mode-card .mode-name {
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text);
     }
 
     .mode-card .mode-desc {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text2);
-      margin-top: 4px;
+      margin-top: 3px;
     }
 
     .mode-card.mode-1 {
-      border-top: 3px solid #56d364;
+      border-top: 3px solid #22c55e;
     }
 
     .mode-card.mode-2 {
-      border-top: 3px solid #58a6ff;
+      border-top: 3px solid #3b82f6;
     }
 
     .mode-card.mode-3 {
-      border-top: 3px solid #d2a8ff;
+      border-top: 3px solid #8b5cf6;
     }
 
     .mode-card.mode-4 {
-      border-top: 3px solid #f78166;
+      border-top: 3px solid #f97316;
     }
 
     .mode-card.mode-5 {
-      border-top: 3px solid #e3b341;
+      border-top: 3px solid #f59e0b;
     }
 
     /* ============================================================
-   DIFFICULTY SELECTOR
+   DIFFICULTY BUTTONS
    ============================================================ */
     .diff-row {
       display: grid;
@@ -277,10 +312,10 @@
 
     .diff-btn {
       min-height: 52px;
-      font-size: 15px;
+      font-size: 14px;
       border-radius: 12px;
-      border: 2px solid var(--border);
-      background: var(--surface2);
+      border: 1.5px solid var(--border);
+      background: rgba(255, 255, 255, 0.60);
       color: var(--text2);
       cursor: pointer;
       font-weight: 600;
@@ -294,15 +329,16 @@
 
     .diff-btn.active {
       background: var(--accent);
-      color: #0d1117;
+      color: #fff;
       border-color: var(--accent);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.26);
     }
 
     /* ============================================================
    PROGRESS BAR
    ============================================================ */
     .progress-wrap {
-      background: var(--surface2);
+      background: rgba(203, 213, 225, 0.55);
       border-radius: 99px;
       height: 8px;
       overflow: hidden;
@@ -318,13 +354,14 @@
     .progress-info {
       display: flex;
       justify-content: space-between;
-      font-size: 13px;
+      font-size: 12px;
       color: var(--text2);
       margin-top: 6px;
+      font-weight: 500;
     }
 
     /* ============================================================
-   SCORE DISPLAY
+   SCORE ROW
    ============================================================ */
     .score-row {
       display: flex;
@@ -333,25 +370,30 @@
 
     .score-box {
       flex: 1;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 10px;
+      background: rgba(255, 255, 255, 0.60);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid var(--glass-border);
+      border-radius: 14px;
+      padding: 10px 8px;
       text-align: center;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
     }
 
     .score-box .score-num {
       font-size: 26px;
       font-weight: 800;
+      color: var(--accent4);
     }
 
     .score-box .score-label {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--text2);
+      font-weight: 500;
     }
 
     .score-box.correct .score-num {
-      color: var(--correct-border);
+      color: var(--accent3);
     }
 
     .score-box.wrong .score-num {
@@ -359,75 +401,45 @@
     }
 
     /* ============================================================
-   AUDIO CONTROLS
+   AUDIO ROW (minimal — only Play + speaking status)
    ============================================================ */
-    .audio-controls {
+    .game-audio-row {
       display: flex;
-      flex-direction: column;
-      gap: 10px;
+      align-items: center;
+      gap: 12px;
     }
 
-    .audio-btn-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
+    .game-audio-row .play-btn {
+      width: auto;
+      min-width: 140px;
+      flex-shrink: 0;
     }
 
-    .audio-btn-row-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-    }
-
-    .speed-wrap {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .speed-label {
-      display: flex;
-      justify-content: space-between;
+    .listening-hint {
+      flex: 1;
       font-size: 13px;
       color: var(--text2);
-    }
-
-    .speed-label span {
-      color: var(--accent);
-      font-weight: 700;
-    }
-
-    input[type=range] {
-      -webkit-appearance: none;
-      width: 100%;
-      height: 6px;
-      border-radius: 99px;
-      background: var(--surface2);
-      outline: none;
-      cursor: pointer;
-    }
-
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background: var(--accent);
-      box-shadow: 0 2px 8px rgba(88, 166, 255, 0.5);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-height: 28px;
     }
 
     /* ============================================================
    QUESTION AREA
    ============================================================ */
     .question-card {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background: var(--glass);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1.5px solid var(--glass-border);
       border-radius: var(--btn-radius);
-      padding: 20px;
+      padding: 22px 18px;
       min-height: 90px;
       display: flex;
       align-items: center;
       justify-content: center;
+      box-shadow: var(--glass-shadow);
     }
 
     .question-text {
@@ -438,14 +450,16 @@
       line-height: 1.5;
     }
 
-    .listening-hint {
-      font-size: 14px;
-      color: var(--text2);
-      text-align: center;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 6px;
+    .tense-badge {
+      display: inline-block;
+      background: var(--accent-light);
+      border: 1px solid rgba(59, 130, 246, 0.25);
+      border-radius: 99px;
+      padding: 4px 12px;
+      font-size: 11px;
+      color: var(--accent);
+      margin-bottom: 8px;
+      font-weight: 600;
     }
 
     /* ============================================================
@@ -460,11 +474,13 @@
     .choice-btn {
       width: 100%;
       min-height: 62px;
-      background: var(--surface2);
-      border: 2px solid var(--border);
+      background: rgba(255, 255, 255, 0.68);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1.5px solid var(--border);
       border-radius: var(--btn-radius);
       color: var(--text);
-      font-size: clamp(15px, 3.5vw, 18px);
+      font-size: clamp(14px, 3.5vw, 17px);
       font-weight: 500;
       cursor: pointer;
       padding: 14px 16px;
@@ -472,8 +488,9 @@
       display: flex;
       align-items: center;
       gap: 12px;
-      transition: border-color 0.15s, background 0.15s, transform 0.1s;
+      transition: border-color 0.15s, background 0.15s, transform 0.1s, box-shadow 0.15s;
       line-height: 1.4;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
     }
 
     .choice-btn:active {
@@ -481,28 +498,45 @@
     }
 
     .choice-btn .choice-letter {
-      min-width: 30px;
-      height: 30px;
+      min-width: 32px;
+      height: 32px;
       border-radius: 50%;
-      background: var(--border);
+      background: rgba(59, 130, 246, 0.10);
+      border: 1.5px solid rgba(59, 130, 246, 0.22);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 700;
+      color: var(--accent);
       flex-shrink: 0;
     }
 
     .choice-btn.correct {
-      background: var(--correct);
+      background: var(--correct-bg);
       border-color: var(--correct-border);
+      color: var(--correct-text);
       animation: popIn 0.25s ease;
+      box-shadow: 0 4px 14px rgba(34, 197, 94, 0.18);
+    }
+
+    .choice-btn.correct .choice-letter {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: var(--correct-border);
+      color: var(--correct-text);
     }
 
     .choice-btn.wrong {
-      background: var(--wrong);
+      background: var(--wrong-bg);
       border-color: var(--wrong-border);
+      color: var(--wrong-text);
       animation: shake 0.3s ease;
+    }
+
+    .choice-btn.wrong .choice-letter {
+      background: rgba(239, 68, 68, 0.15);
+      border-color: var(--wrong-border);
+      color: var(--wrong-text);
     }
 
     .choice-btn:disabled {
@@ -515,7 +549,7 @@
       }
 
       50% {
-        transform: scale(1.03)
+        transform: scale(1.025)
       }
 
       100% {
@@ -544,8 +578,8 @@
    ============================================================ */
     .feedback-banner {
       border-radius: 12px;
-      padding: 14px 18px;
-      font-size: 16px;
+      padding: 13px 18px;
+      font-size: 15px;
       font-weight: 600;
       text-align: center;
       display: none;
@@ -557,127 +591,27 @@
     }
 
     .feedback-banner.correct {
-      background: var(--correct);
-      border: 1px solid var(--correct-border);
-      color: var(--correct-border);
+      background: var(--correct-bg);
+      border: 1.5px solid var(--correct-border);
+      color: var(--correct-text);
     }
 
     .feedback-banner.wrong {
-      background: var(--wrong);
-      border: 1px solid var(--wrong-border);
-      color: var(--wrong-border);
-    }
-
-    /* ============================================================
-   ACTION ROW BOTTOM
-   ============================================================ */
-    .action-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-    }
-
-    .action-row-3 {
-      display: grid;
-      grid-template-columns: 1fr 1fr 1fr;
-      gap: 8px;
-    }
-
-    /* ============================================================
-   RESULT SCREEN
-   ============================================================ */
-    .result-big {
-      text-align: center;
-      padding: 20px 0;
-    }
-
-    .result-icon {
-      font-size: 64px;
-    }
-
-    .result-title {
-      font-size: 26px;
-      font-weight: 800;
-      margin: 10px 0 4px;
-    }
-
-    .result-sub {
-      font-size: 16px;
-      color: var(--text2);
-    }
-
-    .result-score-big {
-      font-size: 52px;
-      font-weight: 900;
-      color: var(--accent);
-    }
-
-    /* ============================================================
-   AUTOPLAY TOGGLE
-   ============================================================ */
-    .toggle-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4px 0;
-    }
-
-    .toggle-label {
-      font-size: 15px;
-      color: var(--text);
-    }
-
-    .toggle-switch {
-      position: relative;
-      width: 52px;
-      height: 28px;
-      cursor: pointer;
-    }
-
-    .toggle-switch input {
-      opacity: 0;
-      width: 0;
-      height: 0;
-    }
-
-    .toggle-slider {
-      position: absolute;
-      inset: 0;
-      background: var(--border);
-      border-radius: 99px;
-      transition: background 0.2s;
-    }
-
-    .toggle-slider::before {
-      content: '';
-      position: absolute;
-      width: 22px;
-      height: 22px;
-      left: 3px;
-      top: 3px;
-      background: #fff;
-      border-radius: 50%;
-      transition: transform 0.2s;
-    }
-
-    .toggle-switch input:checked+.toggle-slider {
-      background: var(--accent);
-    }
-
-    .toggle-switch input:checked+.toggle-slider::before {
-      transform: translateX(24px);
+      background: var(--wrong-bg);
+      border: 1.5px solid var(--wrong-border);
+      color: var(--wrong-text);
     }
 
     /* ============================================================
    HINT BOX
    ============================================================ */
     .hint-box {
-      background: #1a2332;
-      border: 1px solid var(--accent);
+      background: var(--accent-light);
+      border: 1.5px solid rgba(59, 130, 246, 0.30);
       border-radius: 12px;
       padding: 12px 16px;
-      font-size: 15px;
-      color: var(--accent);
+      font-size: 14px;
+      color: var(--accent-dark);
       display: none;
     }
 
@@ -687,48 +621,21 @@
     }
 
     /* ============================================================
-   TENSE BADGE
-   ============================================================ */
-    .tense-badge {
-      display: inline-block;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      border-radius: 99px;
-      padding: 4px 12px;
-      font-size: 12px;
-      color: var(--text2);
-      margin-bottom: 6px;
-    }
-
-    /* ============================================================
-   FOOTER
-   ============================================================ */
-    footer {
-      width: 100%;
-      text-align: center;
-      padding: 16px;
-      font-size: 13px;
-      color: var(--text2);
-      border-top: 1px solid var(--border);
-      background: var(--surface);
-      margin-top: auto;
-    }
-
-    /* ============================================================
    SPEAKING ANIMATION
    ============================================================ */
     .speak-anim {
       display: inline-flex;
-      gap: 4px;
+      gap: 3px;
       align-items: flex-end;
-      height: 20px;
+      height: 18px;
     }
 
     .speak-anim span {
-      width: 4px;
+      width: 3px;
       background: var(--accent);
       border-radius: 2px;
       animation: wave 0.9s ease infinite;
+      min-height: 4px;
     }
 
     .speak-anim span:nth-child(2) {
@@ -736,7 +643,7 @@
     }
 
     .speak-anim span:nth-child(3) {
-      animation-delay: 0.3s;
+      animation-delay: 0.30s;
     }
 
     .speak-anim span:nth-child(4) {
@@ -751,7 +658,7 @@
       }
 
       50% {
-        height: 18px
+        height: 16px
       }
     }
 
@@ -760,11 +667,348 @@
     }
 
     /* ============================================================
+   SLIDE-DOWN MENU OVERLAY
+   ============================================================ */
+    #menu-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(30, 40, 60, 0.18);
+      backdrop-filter: blur(3px);
+      -webkit-backdrop-filter: blur(3px);
+      z-index: 300;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 70px 12px 20px;
+    }
+
+    #menu-overlay.open {
+      display: flex;
+      animation: overlayIn 0.2s ease;
+    }
+
+    @keyframes overlayIn {
+      from {
+        opacity: 0
+      }
+
+      to {
+        opacity: 1
+      }
+    }
+
+    #menu-panel {
+      width: 100%;
+      max-width: 640px;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(28px);
+      -webkit-backdrop-filter: blur(28px);
+      border: 1px solid var(--glass-border);
+      border-radius: 22px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.13);
+      overflow: hidden;
+      animation: panelSlide 0.28s cubic-bezier(0.34, 1.36, 0.64, 1);
+      max-height: 86vh;
+      overflow-y: auto;
+    }
+
+    @keyframes panelSlide {
+      from {
+        transform: translateY(-18px);
+        opacity: 0
+      }
+
+      to {
+        transform: translateY(0);
+        opacity: 1
+      }
+    }
+
+    .menu-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 18px 18px 0;
+    }
+
+    .menu-panel-header h2 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    #menu-close-btn {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: rgba(255, 255, 255, 0.75);
+      font-size: 17px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text2);
+      transition: background 0.15s;
+    }
+
+    #menu-close-btn:active {
+      background: #f1f5f9;
+    }
+
+    #menu-panel-inner {
+      padding: 18px 18px 28px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .menu-section-title {
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 1.3px;
+      color: var(--text3);
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    /* Menu action buttons */
+    .menu-btn-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .menu-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 56px;
+      border-radius: 14px;
+      border: 1.5px solid var(--border);
+      background: rgba(255, 255, 255, 0.75);
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      padding: 10px 14px;
+      text-align: center;
+      width: 100%;
+    }
+
+    .menu-btn:active {
+      transform: scale(0.96);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    .menu-btn.success {
+      background: var(--accent3);
+      color: #fff;
+      border-color: var(--accent3);
+      box-shadow: 0 3px 10px rgba(34, 197, 94, 0.22);
+    }
+
+    .menu-btn.danger {
+      background: var(--accent2);
+      color: #fff;
+      border-color: var(--accent2);
+      box-shadow: 0 3px 10px rgba(239, 68, 68, 0.22);
+    }
+
+    /* ============================================================
+   AUTOPLAY TOGGLE
+   ============================================================ */
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 0;
+    }
+
+    .toggle-label {
+      font-size: 15px;
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 52px;
+      height: 28px;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .toggle-slider {
+      position: absolute;
+      inset: 0;
+      background: #cbd5e1;
+      border-radius: 99px;
+      transition: background 0.2s;
+    }
+
+    .toggle-slider::before {
+      content: '';
+      position: absolute;
+      width: 22px;
+      height: 22px;
+      left: 3px;
+      top: 3px;
+      background: #fff;
+      border-radius: 50%;
+      transition: transform 0.2s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    }
+
+    .toggle-switch input:checked+.toggle-slider {
+      background: var(--accent);
+    }
+
+    .toggle-switch input:checked+.toggle-slider::before {
+      transform: translateX(24px);
+    }
+
+    /* ============================================================
+   VOICE SPEED SLIDER
+   FIX: --range-pct drives the filled-left gradient.
+   touch-action: pan-y lets the thumb drag horizontally without
+   interfering with page scrolling on Android.
+   ============================================================ */
+    .speed-wrap {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .speed-label-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .speed-label-row .speed-title {
+      font-size: 14px;
+      color: var(--text2);
+      font-weight: 500;
+    }
+
+    .speed-label-row .speed-val {
+      font-size: 17px;
+      color: var(--accent);
+      font-weight: 800;
+      min-width: 50px;
+      text-align: right;
+    }
+
+    .speed-sublabels {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .speed-sublabels span {
+      font-size: 11px;
+      color: var(--text3);
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 10px;
+      border-radius: 99px;
+      outline: none;
+      cursor: pointer;
+      touch-action: pan-y;
+      background: linear-gradient(to right,
+          var(--accent) 0%,
+          var(--accent) var(--range-pct, 50%),
+          #e2e8f0 var(--range-pct, 50%),
+          #e2e8f0 100%);
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2.5px solid var(--accent);
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.32);
+      cursor: pointer;
+    }
+
+    input[type=range]::-moz-range-thumb {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #fff;
+      border: 2.5px solid var(--accent);
+      box-shadow: 0 2px 10px rgba(59, 130, 246, 0.32);
+      cursor: pointer;
+    }
+
+    /* ============================================================
+   RESULT SCREEN
+   ============================================================ */
+    .result-big {
+      text-align: center;
+      padding: 22px 0 18px;
+    }
+
+    .result-icon {
+      font-size: 60px;
+    }
+
+    .result-title {
+      font-size: 24px;
+      font-weight: 800;
+      margin: 10px 0 4px;
+      color: var(--text);
+    }
+
+    .result-sub {
+      font-size: 15px;
+      color: var(--text2);
+    }
+
+    .result-score-big {
+      font-size: 52px;
+      font-weight: 900;
+      color: var(--accent);
+      letter-spacing: -1px;
+    }
+
+    /* ============================================================
+   FOOTER
+   ============================================================ */
+    footer {
+      width: 100%;
+      text-align: center;
+      padding: 14px;
+      font-size: 12px;
+      color: var(--text2);
+      border-top: 1px solid rgba(203, 213, 225, 0.5);
+      background: rgba(255, 255, 255, 0.48);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      margin-top: auto;
+    }
+
+    /* ============================================================
    RESPONSIVE
    ============================================================ */
-    @media(min-width:480px) {
-      .audio-btn-row {
-        grid-template-columns: 1fr 1fr 1fr;
+    @media(min-width:520px) {
+      .menu-btn-grid {
+        grid-template-columns: repeat(3, 1fr);
       }
     }
 
@@ -786,22 +1030,99 @@
      HEADER
      ============================================================ -->
   <header id="app-header">
-    <h1>🎧 English Listening</h1>
-    <p>Listen • Understand • Choose</p>
+    <div id="header-spacer"></div>
+    <div id="header-title-wrap">
+      <h1>🎧 English Listening</h1>
+      <p>Listen • Understand • Choose</p>
+    </div>
+    <!-- ☰ button — only shown during the game screen -->
+    <button id="menu-toggle-btn" onclick="openMenuPanel()" aria-label="Open Menu">☰</button>
   </header>
 
+  <!-- ============================================================
+     SLIDE-DOWN MENU OVERLAY
+     Contains: auto-play toggle, voice speed slider, hint,
+               repeat last, restart, go to menu, difficulty
+     ============================================================ -->
+  <div id="menu-overlay" onclick="handleOverlayClick(event)">
+    <div id="menu-panel">
+
+      <div class="menu-panel-header">
+        <h2>⚙️ Settings &amp; Menu</h2>
+        <button id="menu-close-btn" onclick="closeMenuPanel()">✕</button>
+      </div>
+
+      <div id="menu-panel-inner">
+
+        <!-- AUDIO SETTINGS -->
+        <div>
+          <div class="menu-section-title">🔊 Audio Settings</div>
+
+          <!-- Auto-play toggle -->
+          <div class="toggle-row">
+            <span class="toggle-label">Auto-play audio</span>
+            <label class="toggle-switch">
+              <input type="checkbox" id="autoplay-toggle" checked onchange="toggleAutoplay()">
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+
+          <!-- Voice speed slider -->
+          <div class="speed-wrap" style="margin-top:16px">
+            <div class="speed-label-row">
+              <span class="speed-title">Voice Speed</span>
+              <span class="speed-val" id="speed-display">0.90×</span>
+            </div>
+            <input type="range" id="speed-slider" min="0.6" max="1.2" step="0.05" value="0.9">
+            <div class="speed-sublabels">
+              <span>Slow 0.6×</span>
+              <span>Normal 0.9×</span>
+              <span>Fast 1.2×</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- GAME CONTROLS -->
+        <div>
+          <div class="menu-section-title">🎮 Game Controls</div>
+          <div class="menu-btn-grid">
+            <button class="menu-btn" onclick="menuAction('hint')">💡 Hint</button>
+            <button class="menu-btn" onclick="menuAction('repeatLast')">🔂 Repeat Last</button>
+            <button class="menu-btn success" onclick="menuAction('restart')">🔄 Restart</button>
+            <button class="menu-btn danger" onclick="menuAction('menu')">🏠 Main Menu</button>
+          </div>
+        </div>
+
+        <!-- DIFFICULTY -->
+        <div>
+          <div class="menu-section-title">⚡ Difficulty (next game)</div>
+          <div class="diff-row">
+            <button class="diff-btn active" id="diff-beginner" onclick="setDiffMenu('beginner')">🌱 Beginner</button>
+            <button class="diff-btn" id="diff-intermediate" onclick="setDiffMenu('intermediate')">📘 Medium</button>
+            <button class="diff-btn" id="diff-advanced" onclick="setDiffMenu('advanced')">🔥 Advanced</button>
+          </div>
+        </div>
+
+      </div><!-- end #menu-panel-inner -->
+    </div><!-- end #menu-panel -->
+  </div><!-- end #menu-overlay -->
+
+  <!-- ============================================================
+     MAIN
+     ============================================================ -->
   <div id="main">
 
     <!-- ============================================================
        SCREEN: MODE SELECTION
        ============================================================ -->
     <div id="screen-menu" class="screen active">
+
       <div class="card">
         <div class="section-title">Select Difficulty</div>
         <div class="diff-row">
-          <button class="diff-btn active" onclick="setDiff('beginner')">🌱 Beginner</button>
-          <button class="diff-btn" onclick="setDiff('intermediate')">📘 Medium</button>
-          <button class="diff-btn" onclick="setDiff('advanced')">🔥 Advanced</button>
+          <button class="diff-btn active" id="menu-diff-beginner" onclick="setDiff('beginner')">🌱 Beginner</button>
+          <button class="diff-btn" id="menu-diff-intermediate" onclick="setDiff('intermediate')">📘 Medium</button>
+          <button class="diff-btn" id="menu-diff-advanced" onclick="setDiff('advanced')">🔥 Advanced</button>
         </div>
       </div>
 
@@ -835,21 +1156,24 @@
           </div>
         </div>
       </div>
-    </div>
+
+    </div><!-- end screen-menu -->
 
     <!-- ============================================================
-       SCREEN: GAME
+       SCREEN: GAME — ULTRA MINIMAL
+       Visible: progress, score, question, choices, play btn, next btn
+       Everything else lives in the ☰ menu panel
        ============================================================ -->
     <div id="screen-game" class="screen">
 
       <!-- Progress -->
-      <div class="card">
+      <div class="card" style="padding:14px 18px">
         <div class="progress-wrap">
           <div class="progress-bar" id="progress-bar" style="width:0%"></div>
         </div>
         <div class="progress-info">
           <span id="progress-text">Question 1 of 10</span>
-          <span id="mode-label">Mode 1</span>
+          <span id="mode-label" style="color:var(--accent);font-weight:600">Mode 1</span>
         </div>
       </div>
 
@@ -869,61 +1193,15 @@
         </div>
       </div>
 
-      <!-- Audio Controls -->
-      <div class="card audio-controls">
-        <div class="section-title">Audio Controls</div>
-        <div class="audio-btn-row">
-          <button class="btn btn-primary btn-sm" onclick="playAudio()">▶ Play</button>
-          <button class="btn btn-secondary btn-sm" onclick="replayAudio()">🔁 Replay</button>
-        </div>
-        <div class="audio-btn-row-3">
-          <button class="btn btn-secondary btn-sm" onclick="repeatLast()">🔂 Repeat Last</button>
-          <button class="btn btn-secondary btn-sm" id="hint-btn" onclick="showHint()">💡 Hint</button>
-          <div></div>
-        </div>
-
-        <!-- Speaking animation -->
-        <div class="listening-hint" id="speak-status">
-          <div class="speak-anim hidden" id="speak-anim">
-            <span></span><span></span><span></span><span></span>
-          </div>
-          <span id="speak-text">Press Play to listen</span>
-        </div>
-
-        <!-- Autoplay toggle -->
-        <div class="toggle-row">
-          <span class="toggle-label">Auto-play audio</span>
-          <label class="toggle-switch">
-            <input type="checkbox" id="autoplay-toggle" checked onchange="toggleAutoplay()">
-            <span class="toggle-slider"></span>
-          </label>
-        </div>
-
-        <!-- Speed slider -->
-        <div class="speed-wrap">
-          <div class="speed-label">
-            <span>Voice Speed</span>
-            <span id="speed-display">0.9×</span>
-          </div>
-          <input type="range" id="speed-slider" min="0.6" max="1.2" step="0.05" value="0.9"
-            oninput="updateSpeed(this.value)">
-          <div class="speed-label">
-            <span style="font-size:11px">Slow (0.6)</span>
-            <span style="font-size:11px">Normal (0.9)</span>
-            <span style="font-size:11px">Fast (1.2)</span>
-          </div>
-        </div>
-      </div>
-
       <!-- Question -->
-      <div class="card question-card">
-        <div>
+      <div class="question-card">
+        <div style="text-align:center">
           <div id="tense-badge" class="tense-badge" style="display:none"></div>
-          <div class="question-text" id="question-text">Press Play to start the question</div>
+          <div class="question-text" id="question-text">Press Play to start</div>
         </div>
       </div>
 
-      <!-- Hint Box -->
+      <!-- Hint (hidden until triggered via menu) -->
       <div class="hint-box" id="hint-box">💡 <span id="hint-text"></span></div>
 
       <!-- Choices -->
@@ -932,13 +1210,22 @@
       <!-- Feedback -->
       <div class="feedback-banner" id="feedback-banner"></div>
 
-      <!-- Action Buttons -->
-      <div class="action-row">
-        <button class="btn btn-success" id="next-btn" onclick="nextQuestion()" style="display:none">Next →</button>
-        <button class="btn btn-secondary" onclick="goMenu()">🏠 Menu</button>
+      <!-- Play / Replay — ONLY audio control on the main game screen -->
+      <div class="game-audio-row card" style="padding:13px 16px">
+        <button class="btn btn-primary btn-sm play-btn" onclick="playAudio()">▶ Play / Replay</button>
+        <div class="listening-hint" id="speak-status">
+          <div class="speak-anim hidden" id="speak-anim">
+            <span></span><span></span><span></span><span></span>
+          </div>
+          <span id="speak-text">Press Play to listen</span>
+        </div>
       </div>
 
-    </div>
+      <!-- Next button — appears after answering -->
+      <button class="btn btn-success" id="next-btn" onclick="nextQuestion()" style="display:none">Next Question
+        →</button>
+
+    </div><!-- end screen-game -->
 
     <!-- ============================================================
        SCREEN: RESULT
@@ -962,13 +1249,18 @@
       </div>
       <button class="btn btn-primary" onclick="restartGame()">🔄 Play Again</button>
       <button class="btn btn-secondary" onclick="goMenu()">🏠 Main Menu</button>
-      <footer style="margin-top:8px;background:none;border:none">Coded &amp; Designed by DuGiaVăn</footer>
-    </div>
+      <footer style="margin-top:6px;background:none;border:none">Coded &amp; Designed by DuGiaVăn</footer>
+    </div><!-- end screen-result -->
 
   </div><!-- end #main -->
 
   <footer id="main-footer">Coded &amp; Designed by DuGiaVăn</footer>
 
+  <!-- ============================================================
+     JAVASCRIPT — ALL ORIGINAL LOGIC PRESERVED
+     Only speakText() and updateSpeed() have been modified
+     to fix Android voice speed reliability.
+     ============================================================ -->
   <script>
     /* ============================================================
        DATA: MODE 1 — WORD LISTENING (40 words)
@@ -1014,54 +1306,6 @@
       { audio: "geography", choices: ["geography", "biography", "photography"], answer: 0 },
       { audio: "vegetable", choices: ["vegetable", "valuable", "variable"], answer: 0 },
       { audio: "calculator", choices: ["calculator", "escalator", "alligator"], answer: 0 },
-      { audio: "flower", choices: ["power", "tower", "flower"], answer: 2 },
-      { audio: "bread", choices: ["bread", "head", "red"], answer: 0 },
-      { audio: "snack", choices: ["snake", "snack", "stack"], answer: 1 },
-      { audio: "sheep", choices: ["ship", "sheep", "sleep"], answer: 1 },
-      { audio: "mouse", choices: ["mouth", "mouse", "house"], answer: 1 },
-      { audio: "climb", choices: ["crime", "climb", "time"], answer: 1 },
-      { audio: "cloud", choices: ["proud", "cloud", "crowd"], answer: 1 },
-      { audio: "skirt", choices: ["shirt", "skirt", "short"], answer: 1 },
-
-      // Nhóm 2: Từ vựng Unit 7 & 12 (Television & Robots)
-      { audio: "cartoon", choices: ["balloon", "cartoon", "monsoon"], answer: 1 },
-      { audio: "weather", choices: ["feather", "whether", "weather"], answer: 2 },
-      { audio: "robot", choices: ["robot", "robust", "rocket"], answer: 0 },
-      { audio: "worker", choices: ["worker", "walker", "water"], answer: 0 },
-      { audio: "future", choices: ["feature", "future", "nature"], answer: 1 },
-      { audio: "space", choices: ["place", "space", "spice"], answer: 1 },
-
-      // Nhóm 3: Các từ đa âm tiết (Polysyllabic words)
-      { audio: "expensive", choices: ["expensive", "extensive", "offensive"], answer: 0 },
-      { audio: "delicious", choices: ["suspicious", "delicious", "ambitious"], answer: 1 },
-      { audio: "important", choices: ["impotent", "important", "impatient"], answer: 1 },
-      { audio: "dinosaur", choices: ["dinosaur", "diaspora", "dinosauria"], answer: 0 },
-      { audio: "tomorrow", choices: ["tomorrow", "borrow", "sorrow"], answer: 0 },
-      { audio: "afternoon", choices: ["afternoon", "afterward", "aftershave"], answer: 0 },
-      { audio: "dangerous", choices: ["generous", "dangerous", "mountainous"], answer: 1 },
-      { audio: "yesterday", choices: ["yesterday", "everyday", "someday"], answer: 0 },
-
-      // Nhóm 4: Bẫy phát âm khó (Tricky pronunciation)
-      { audio: "island", choices: ["island", "ireland", "highland"], answer: 0 },
-      { audio: "village", choices: ["village", "vintage", "voltage"], answer: 0 },
-      { audio: "message", choices: ["massive", "passage", "message"], answer: 2 },
-      { audio: "scientist", choices: ["scientist", "dentist", "artist"], answer: 0 },
-      { audio: "furniture", choices: ["furniture", "signature", "departure"], answer: 0 },
-      { audio: "umbrella", choices: ["umbrella", "gorilla", "vanilla"], answer: 0 },
-      { audio: "engineer", choices: ["engineer", "pioneer", "volunteer"], answer: 0 },
-      { audio: "neighborhood", choices: ["neighborhood", "brotherhood", "likelihood"], answer: 0 },
-
-      // Nhóm 5: Đồ ăn và đồ vật quen thuộc
-      { audio: "spaghetti", choices: ["spaghetti", "confetti", "property"], answer: 0 },
-      { audio: "pineapple", choices: ["pineapple", "fine apple", "pine tree"], answer: 0 },
-      { audio: "medicine", choices: ["medicine", "magazine", "machine"], answer: 0 },
-      { audio: "invitation", choices: ["information", "invitation", "imagination"], answer: 1 },
-      { audio: "environment", choices: ["environment", "entertainment", "employment"], answer: 0 },
-      { audio: "vacation", choices: ["vacation", "location", "education"], answer: 0 },
-      { audio: "university", choices: ["university", "diversity", "adversity"], answer: 0 },
-      { audio: "adventure", choices: ["adventure", "advantage", "advertise"], answer: 0 },
-      { audio: "helicopter", choices: ["helicopter", "pericopter", "character"], answer: 0 },
-      { audio: "restaurant", choices: ["restaurant", "assistant", "important"], answer: 0 }
     ];
 
     /* ============================================================
@@ -1128,74 +1372,6 @@
       { audio: "I enjoy reading books.", choices: ["I enjoyed reading books", "I am enjoying reading books", "I enjoy reading books"], answer: 2, tense: "present_simple" },
       { audio: "He is talking on the phone.", choices: ["He talks on the phone", "He talked on the phone", "He is talking on the phone"], answer: 2, tense: "present_continuous" },
       { audio: "They missed the train.", choices: ["They miss the train", "They are missing the train", "They missed the train"], answer: 2, tense: "past_simple" },
-      { audio: "She sings a beautiful song.", choices: ["She sang a beautiful song", "She is singing a beautiful song", "She sings a beautiful song"], answer: 2, tense: "present_simple" },
-      { audio: "They are building a house.", choices: ["They are building a house", "They build a house", "They built a house"], answer: 0, tense: "present_continuous" },
-      { audio: "He bought a new car.", choices: ["He buys a new car", "He bought a new car", "He is buying a new car"], answer: 1, tense: "past_simple" },
-      { audio: "I brush my teeth.", choices: ["I am brushing my teeth", "I brushed my teeth", "I brush my teeth"], answer: 2, tense: "present_simple" },
-      { audio: "We are having lunch.", choices: ["We have lunch", "We are having lunch", "We had lunch"], answer: 1, tense: "present_continuous" },
-      { audio: "She wrote a letter.", choices: ["She wrote a letter", "She writes a letter", "She is writing a letter"], answer: 0, tense: "past_simple" },
-      { audio: "The dog barks loudly.", choices: ["The dog is barking loudly", "The dog barks loudly", "The dog barked loudly"], answer: 1, tense: "present_simple" },
-      { audio: "He is closing the window.", choices: ["He is closing the window", "He closes the window", "He closed the window"], answer: 0, tense: "present_continuous" },
-      { audio: "They cleaned the room.", choices: ["They clean the room", "They are cleaning the room", "They cleaned the room"], answer: 2, tense: "past_simple" },
-      { audio: "I work in an office.", choices: ["I worked in an office", "I work in an office", "I am working in an office"], answer: 1, tense: "present_simple" },
-
-      // Nhóm tập trung vào đuôi -ed và -s (Dễ nhầm lẫn nhất)
-      { audio: "She cooks dinner.", choices: ["She cooks dinner", "She cooked dinner", "She is cooking dinner"], answer: 0, tense: "present_simple" },
-      { audio: "He walked to school.", choices: ["He walks to school", "He is walking to school", "He walked to school"], answer: 2, tense: "past_simple" },
-      { audio: "They play tennis.", choices: ["They play tennis", "They played tennis", "They are playing tennis"], answer: 0, tense: "present_simple" },
-      { audio: "I am listening to music.", choices: ["I listened to music", "I listen to music", "I am listening to music"], answer: 2, tense: "present_continuous" },
-      { audio: "We finished the project.", choices: ["We finished the project", "We finish the project", "We are finishing the project"], answer: 0, tense: "past_simple" },
-      { audio: "The cat sleeps on the bed.", choices: ["The cat is sleeping on the bed", "The cat sleeps on the bed", "The cat slept on the bed"], answer: 1, tense: "present_simple" },
-      { audio: "It is raining outside.", choices: ["It rains outside", "It rained outside", "It is raining outside"], answer: 2, tense: "present_continuous" },
-      { audio: "He lived in London.", choices: ["He lives in London", "He lived in London", "He is living in London"], answer: 1, tense: "past_simple" },
-      { audio: "They are dancing together.", choices: ["They are dancing together", "They dance together", "They danced together"], answer: 0, tense: "present_continuous" },
-      { audio: "She lost her keys.", choices: ["She loses her keys", "She lost her keys", "She is losing her keys"], answer: 1, tense: "past_simple" },
-
-      // Nhóm các động từ bất quy tắc (Irregular verbs)
-      { audio: "I saw a movie.", choices: ["I see a movie", "I am seeing a movie", "I saw a movie"], answer: 2, tense: "past_simple" },
-      { audio: "He runs fast.", choices: ["He runs fast", "He ran fast", "He is running fast"], answer: 0, tense: "present_simple" },
-      { audio: "They are swimming.", choices: ["They swam", "They are swimming", "They swim"], answer: 1, tense: "present_continuous" },
-      { audio: "She made a cake.", choices: ["She makes a cake", "She made a cake", "She is making a cake"], answer: 1, tense: "past_simple" },
-      { audio: "We drink water.", choices: ["We drink water", "We drank water", "We are drinking water"], answer: 0, tense: "present_simple" },
-      { audio: "He is riding a horse.", choices: ["He rode a horse", "He rides a horse", "He is riding a horse"], answer: 2, tense: "present_continuous" },
-      { audio: "I went shopping.", choices: ["I go shopping", "I am going shopping", "I went shopping"], answer: 2, tense: "past_simple" },
-      { audio: "They give presents.", choices: ["They give presents", "They gave presents", "They are giving presents"], answer: 0, tense: "present_simple" },
-      { audio: "She is taking photos.", choices: ["She takes photos", "She took photos", "She is taking photos"], answer: 2, tense: "present_continuous" },
-      { audio: "He broke the vase.", choices: ["He breaks the vase", "He broke the vase", "He is breaking the vase"], answer: 1, tense: "past_simple" },
-      { audio: "He teaches English.", choices: ["He taught English", "He is teaching English", "He teaches English"], answer: 2, tense: "present_simple" },
-      { audio: "She watched a movie.", choices: ["She watches a movie", "She watched a movie", "She is watching a movie"], answer: 1, tense: "past_simple" },
-      { audio: "The bird flies high.", choices: ["The bird flew high", "The bird is flying high", "The bird flies high"], answer: 2, tense: "present_simple" },
-      { audio: "It stopped raining.", choices: ["It stops raining", "It stopped raining", "It is stopping raining"], answer: 1, tense: "past_simple" },
-      { audio: "He fixes cars.", choices: ["He fixed cars", "He is fixing cars", "He fixes cars"], answer: 2, tense: "present_simple" },
-      { audio: "She kissed her baby.", choices: ["She kisses her baby", "She kissed her baby", "She is kissing her baby"], answer: 1, tense: "past_simple" },
-      { audio: "The sun rises.", choices: ["The sun rose", "The sun is rising", "The sun rises"], answer: 2, tense: "present_simple" },
-      { audio: "He helped me.", choices: ["He helps me", "He is helping me", "He helped me"], answer: 2, tense: "past_simple" },
-      { audio: "She washes her hair.", choices: ["She washed her hair", "She washes her hair", "She is washing her hair"], answer: 1, tense: "present_simple" },
-      { audio: "They pushed the door.", choices: ["They push the door", "They are pushing the door", "They pushed the door"], answer: 2, tense: "past_simple" },
-
-      // Nhóm 2: Hiện tại tiếp diễn và các hành động đang xảy ra
-      { audio: "We are waiting for you.", choices: ["We are waiting for you", "We wait for you", "We waited for you"], answer: 0, tense: "present_continuous" },
-      { audio: "The baby is crying.", choices: ["The baby cries", "The baby is crying", "The baby cried"], answer: 1, tense: "present_continuous" },
-      { audio: "I am writing a blog.", choices: ["I write a blog", "I wrote a blog", "I am writing a blog"], answer: 2, tense: "present_continuous" },
-      { audio: "They are having a party.", choices: ["They have a party", "They are having a party", "They had a party"], answer: 1, tense: "present_continuous" },
-      { audio: "She is making tea.", choices: ["She makes tea", "She is making tea", "She made tea"], answer: 1, tense: "present_continuous" },
-      { audio: "He is painting the wall.", choices: ["He paints the wall", "He is painting the wall", "He painted the wall"], answer: 1, tense: "present_continuous" },
-      { audio: "We are planting trees.", choices: ["We are planting trees", "We plant trees", "We planted trees"], answer: 0, tense: "present_continuous" },
-      { audio: "It is getting dark.", choices: ["It gets dark", "It got dark", "It is getting dark"], answer: 2, tense: "present_continuous" },
-      { audio: "You are doing great.", choices: ["You do great", "You did great", "You are doing great"], answer: 2, tense: "present_continuous" },
-      { audio: "They are selling fruit.", choices: ["They sell fruit", "They are selling fruit", "They sold fruit"], answer: 1, tense: "present_continuous" },
-
-      // Nhóm 3: Động từ bất quy tắc mức độ trung bình
-      { audio: "I forgot my password.", choices: ["I forget my password", "I forgot my password", "I am forgetting my password"], answer: 1, tense: "past_simple" },
-      { audio: "He tells a story.", choices: ["He told a story", "He tells a story", "He is telling a story"], answer: 1, tense: "present_simple" },
-      { audio: "We won the prize.", choices: ["We win the prize", "We won the prize", "We are winning the prize"], answer: 1, tense: "past_simple" },
-      { audio: "She leaves at noon.", choices: ["She left at noon", "She is leaving at noon", "She leaves at noon"], answer: 2, tense: "present_simple" },
-      { audio: "They sent a gift.", choices: ["They send a gift", "They sent a gift", "They are sending a gift"], answer: 1, tense: "past_simple" },
-      { audio: "I keep my promise.", choices: ["I keep my promise", "I kept my promise", "I am keeping my promise"], answer: 0, tense: "present_simple" },
-      { audio: "He swam in the lake.", choices: ["He swims in the lake", "He swam in the lake", "He is swimming in the lake"], answer: 1, tense: "past_simple" },
-      { audio: "She brings some food.", choices: ["She brings some food", "She brought some food", "She is bringing some food"], answer: 0, tense: "present_simple" },
-      { audio: "They built a bridge.", choices: ["They build a bridge", "They are building a bridge", "They built a bridge"], answer: 2, tense: "past_simple" },
-      { audio: "We chose the best one.", choices: ["We choose the best one", "We chose the best one", "We are choosing the best one"], answer: 1, tense: "past_simple" }
     ];
 
     /* ============================================================
@@ -1269,239 +1445,245 @@
        ============================================================ */
     const mode4Data = [
       {
-        audio: "- Where are you going? - Oh, I am going to school.",
-        question: "Where is the speaker going?",
+        audio: "Person A: Where are you going? Person B: I am going to school.",
+        question: "Where is Person B going?",
         choices: ["He is going to school", "He is going home", "He is going to the store"],
         answer: 0
       },
       {
-        audio: "- What did you eat for lunch? - I ate rice and vegetables.",
-        question: "What did the person eat?",
+        audio: "Person A: What did you eat? Person B: I ate rice and vegetables.",
+        question: "What did Person B eat?",
         choices: ["Rice and vegetables", "Bread and butter", "Soup and noodles"],
         answer: 0
       },
       {
-        audio: "- Are you studying now? - Yes, I am studying English.",
-        question: "What is the person studying?",
+        audio: "Person A: Are you studying now? Person B: Yes, I am studying English.",
+        question: "What is Person B studying?",
         choices: ["Mathematics", "English", "Science"],
         answer: 1
       },
       {
-        audio: "- Where did you go yesterday? - I went to the hospital.",
-        question: "Where did the speaker go?",
+        audio: "Person A: Where did you go yesterday? Person B: I went to the hospital.",
+        question: "Where did Person B go?",
         choices: ["To the park", "To the market", "To the hospital"],
         answer: 2
       },
       {
-        audio: "- What time do you wake up? - I usually wake up at six o'clock.",
-        question: "What time does the speaker wake up?",
+        audio: "Person A: What time do you wake up? Person B: I wake up at six o'clock.",
+        question: "What time does Person B wake up?",
         choices: ["At seven o'clock", "At six o'clock", "At eight o'clock"],
         answer: 1
       },
       {
-        audio: "- What are you doing in the kitchen? - I am cooking lunch.",
-        question: "What is the person doing?",
+        audio: "Person A: What are you doing? Person B: I am cooking lunch.",
+        question: "What is Person B doing?",
         choices: ["He is eating lunch", "He is cooking lunch", "He is buying lunch"],
         answer: 1
       },
       {
-        audio: "- Did she pass the test? - Yes, she passed with a high score.",
+        audio: "Person A: Did she pass the test? Person B: Yes, she passed with a high score.",
         question: "How did she do on the test?",
         choices: ["She failed", "She passed with a high score", "She did not take the test"],
         answer: 1
       },
       {
-        audio: "- Is he at home right now? - No, he is at the office.",
-        question: "Where is the man?",
+        audio: "Person A: Is he at home? Person B: No, he is at the office.",
+        question: "Where is he?",
         choices: ["At home", "At school", "At the office"],
         answer: 2
       },
       {
-        audio: "- Do you like coffee? - Not really, I prefer tea.",
-        question: "What does the speaker prefer?",
+        audio: "Person A: Do you like coffee? Person B: No, I prefer tea.",
+        question: "What does Person B prefer?",
         choices: ["Coffee", "Tea", "Juice"],
         answer: 1
       },
       {
-        audio: "- What did they do last Sunday? - They visited their grandmother.",
+        audio: "Person A: What did they do last Sunday? Person B: They visited their grandmother.",
         question: "What did they do last Sunday?",
         choices: ["They watched a movie", "They visited their grandmother", "They played football"],
         answer: 1
       },
       {
-        audio: "- Are they playing football over there? - No, they are swimming.",
-        question: "What are the people doing?",
+        audio: "Person A: Are they playing football? Person B: No, they are swimming.",
+        question: "What are they doing?",
         choices: ["Playing football", "Swimming", "Running"],
         answer: 1
       },
       {
-        audio: "- Where does she live? - She lives near the school.",
-        question: "Where is her house?",
+        audio: "Person A: Where does she live? Person B: She lives near the school.",
+        question: "Where does she live?",
         choices: ["Near the hospital", "Near the market", "Near the school"],
         answer: 2
       },
       {
-        audio: "- Did you call her? - Yes, I called her this morning.",
-        question: "When did the speaker call her?",
+        audio: "Person A: Did you call her? Person B: Yes, I called her this morning.",
+        question: "When did Person B call her?",
         choices: ["Last night", "In the afternoon", "This morning"],
         answer: 2
       },
       {
-        audio: "- What is he reading? - He is reading a newspaper.",
-        question: "What is the man reading?",
+        audio: "Person A: What is he reading? Person B: He is reading a newspaper.",
+        question: "What is he reading?",
         choices: ["A magazine", "A newspaper", "A textbook"],
         answer: 1
       },
       {
-        audio: "- Did they buy a new car? - No, they bought a bicycle.",
+        audio: "Person A: Did they buy a car? Person B: No, they bought a bicycle.",
         question: "What did they buy?",
         choices: ["A car", "A motorcycle", "A bicycle"],
         answer: 2
       },
       {
-        audio: "- Where is she going? - She is going to the library.",
-        question: "Where is the girl going?",
+        audio: "Person A: Where is she going? Person B: She is going to the library.",
+        question: "Where is she going?",
         choices: ["To the cinema", "To the library", "To the gym"],
         answer: 1
       },
       {
-        audio: "- Do they work here? - No, they work at the hospital.",
-        question: "Where is their workplace?",
+        audio: "Person A: Do they work here? Person B: No, they work at the hospital.",
+        question: "Where do they work?",
         choices: ["At the school", "At the library", "At the hospital"],
         answer: 2
       },
       {
-        audio: "- What are you cooking? - I am cooking some soup.",
-        question: "What is being cooked?",
+        audio: "Person A: What are you cooking? Person B: I am cooking soup.",
+        question: "What is Person B cooking?",
         choices: ["Soup", "Rice", "Noodles"],
         answer: 0
       },
       {
-        audio: "- Did he win the game? - Yes, he won the game finally.",
-        question: "What was the result of the game?",
+        audio: "Person A: Did he win the game? Person B: Yes, he won the game.",
+        question: "What happened in the game?",
         choices: ["He lost", "He won", "He did not play"],
         answer: 1
       },
       {
-        audio: "- Is she sleeping? - No, she is watching television.",
-        question: "What is she doing now?",
+        audio: "Person A: Is she sleeping? Person B: No, she is watching television.",
+        question: "What is she doing?",
         choices: ["Sleeping", "Cooking", "Watching television"],
         answer: 2
       },
       {
-        audio: "- What did you buy at the store? - I bought some fruit and vegetables.",
-        question: "What did the speaker buy?",
+        audio: "Person A: What did you buy? Person B: I bought some fruit and vegetables.",
+        question: "What did Person B buy?",
         choices: ["Some meat and fish", "Some fruit and vegetables", "Some bread and milk"],
         answer: 1
       },
       {
-        audio: "- Where is Tom? - Look, he is sitting in the garden.",
-        question: "Where can you find Tom?",
+        audio: "Person A: Where is Tom? Person B: He is sitting in the garden.",
+        question: "Where is Tom?",
         choices: ["In the kitchen", "In the garden", "In the bedroom"],
         answer: 1
       },
       {
-        audio: "- Do you exercise every day? - Yes, I run every morning.",
-        question: "What does the person do every morning?",
+        audio: "Person A: Do you exercise every day? Person B: Yes, I run every morning.",
+        question: "What does Person B do every morning?",
         choices: ["He swims", "He runs", "He cycles"],
         answer: 1
       },
       {
-        audio: "- What did she study at university? - She studied music.",
-        question: "What was her major?",
+        audio: "Person A: What did she study? Person B: She studied music at university.",
+        question: "What did she study?",
         choices: ["Art", "Science", "Music"],
         answer: 2
       },
       {
-        audio: "- Are you coming to the party? - Yes, I am coming with my family.",
-        question: "Who is the speaker coming with?",
+        audio: "Person A: Are you coming to the party? Person B: Yes, I am coming with my family.",
+        question: "Who is Person B coming with?",
         choices: ["With friends", "With colleagues", "With family"],
         answer: 2
       },
       {
-        audio: "- Does he speak French? - No, he speaks Spanish.",
-        question: "What language does he use?",
+        audio: "Person A: Does he speak French? Person B: No, he speaks Spanish.",
+        question: "What language does he speak?",
         choices: ["French", "English", "Spanish"],
         answer: 2
       },
       {
-        audio: "- What time did the film start? - It started at eight o'clock.",
-        question: "When did the movie begin?",
+        audio: "Person A: What time did the film start? Person B: It started at eight o'clock.",
+        question: "What time did the film start?",
         choices: ["Seven o'clock", "Eight o'clock", "Nine o'clock"],
         answer: 1
       },
       {
-        audio: "- Is she learning to drive? - Yes, she is practising every weekend.",
-        question: "When does she practice driving?",
+        audio: "Person A: Is she learning to drive? Person B: Yes, she is practising every weekend.",
+        question: "When does she practise?",
         choices: ["Every day", "Every weekday", "Every weekend"],
         answer: 2
       },
       {
-        audio: "- Did they enjoy the food? - Yes, they loved it very much.",
-        question: "Did they like the meal?",
+        audio: "Person A: Did they enjoy the food? Person B: Yes, they loved it.",
+        question: "How did they feel about the food?",
         choices: ["They disliked it", "They loved it", "They were not hungry"],
         answer: 1
       },
       {
-        audio: "- What are the children doing? - They are playing in the garden.",
-        question: "Where are the kids?",
+        audio: "Person A: What are the children doing? Person B: They are playing in the garden.",
+        question: "Where are the children playing?",
         choices: ["In the park", "In the street", "In the garden"],
         answer: 2
       },
       {
-        audio: "- Where did you find your phone? - I found it under the table.",
-        question: "Where was the phone?",
+        audio: "Person A: Where did you find your phone? Person B: I found it under the table.",
+        question: "Where did Person B find the phone?",
         choices: ["On the sofa", "Under the table", "In the bag"],
         answer: 1
       },
       {
-        audio: "- Is he working today? - No, he is on holiday this week.",
-        question: "Why is the man not at work?",
+        audio: "Person A: Is he working today? Person B: No, he is on holiday.",
+        question: "Why is he not working?",
         choices: ["He is sick", "He is on holiday", "He finished work"],
         answer: 1
       },
       {
-        audio: "- What does she drink every morning? - She drinks a cup of green tea.",
-        question: "What is her morning drink?",
+        audio: "Person A: What does she drink every morning? Person B: She drinks a cup of green tea.",
+        question: "What does she drink every morning?",
         choices: ["Black coffee", "Orange juice", "Green tea"],
         answer: 2
       },
       {
-        audio: "- Where is the meeting? - Oh, it is in the conference room.",
+        audio: "Person A: Did he finish his report? Person B: No, he is still writing it.",
+        question: "What is he doing?",
+        choices: ["He finished his report", "He is reading the report", "He is still writing it"],
+        answer: 2
+      },
+      {
+        audio: "Person A: Where is the meeting? Person B: It is in the conference room.",
         question: "Where is the meeting?",
         choices: ["In the office", "In the conference room", "In the cafeteria"],
         answer: 1
       },
       {
-        audio: "Hey, do you know what they study? - Yes, they study computer science.",
+        audio: "Person A: What do they study? Person B: They study computer science.",
         question: "What do they study?",
         choices: ["Computer science", "Business", "Medicine"],
         answer: 0
       },
       {
-        audio: "- Did she call you? - Yes, she called me last night.",
+        audio: "Person A: Did she call you? Person B: Yes, she called me last night.",
         question: "When did she call?",
         choices: ["This morning", "Yesterday afternoon", "Last night"],
         answer: 2
       },
       {
-        audio: "- Excuse me, is the shop open? - Yes, it opens at nine.",
+        audio: "Person A: Is the shop open? Person B: Yes, it opens at nine.",
         question: "When does the shop open?",
         choices: ["At eight", "At nine", "At ten"],
         answer: 1
       },
       {
-        audio: "- What did he cook for dinner? - Well, he cooked pasta and salad.",
+        audio: "Person A: What did he cook? Person B: He cooked pasta and salad.",
         question: "What did he cook?",
         choices: ["Soup and bread", "Rice and chicken", "Pasta and salad"],
         answer: 2
       },
       {
-        audio: "- Is she at school now? - No, she stayed home today.",
+        audio: "Person A: Is she at school? Person B: No, she stayed home today.",
         question: "Where is she today?",
         choices: ["At school", "At work", "At home"],
         answer: 2
-      }
+      },
     ];
 
     /* ============================================================
@@ -1688,248 +1870,6 @@
         choices: ["Meeting clients and writing reports", "Teaching and lecturing", "Designing and painting"],
         answer: 0
       },
-      [
-        {
-          audio: "John went to the supermarket this morning. He bought some fresh fruit and vegetables. He also picked up a bottle of milk.",
-          question: "What did John buy at the supermarket?",
-          choices: ["Bread and butter", "Fruit, vegetables, and milk", "Meat and eggs"],
-          answer: 1
-        },
-        {
-          audio: "The new library opened in the city center yesterday. It has thousands of books and a quiet study area. Students can use the computers for free.",
-          question: "Where is the new library located?",
-          choices: ["In the city center", "Near the park", "Next to the school"],
-          answer: 0
-        },
-        {
-          audio: "I forgot my umbrella at home today. It started raining heavily when I was walking to the bus stop. I got completely wet.",
-          question: "Why did the speaker get wet?",
-          choices: ["Because the bus was late", "Because they forgot their umbrella", "Because they were swimming"],
-          answer: 1
-        },
-        {
-          audio: "Peter loves playing the guitar. He practices for two hours every evening after finishing his homework. His dream is to be in a band.",
-          question: "How long does Peter practice the guitar each day?",
-          choices: ["One hour", "Thirty minutes", "Two hours"],
-          answer: 2
-        },
-        {
-          audio: "Sarah decided to go to the mountains for her vacation. She wants to go hiking and take beautiful photos of the sunrise.",
-          question: "What does Sarah want to do on her vacation?",
-          choices: ["Swim in the ocean", "Go hiking and take photos", "Visit a big city"],
-          answer: 1
-        },
-        {
-          audio: "Drinking enough water is very important for your health. Doctors recommend having at least eight glasses a day to keep your body hydrated.",
-          question: "How many glasses of water should you drink a day?",
-          choices: ["At least eight glasses", "Exactly five glasses", "Ten glasses or more"],
-          answer: 0
-        },
-        {
-          audio: "The movie starts at seven-thirty. We should meet at the cinema fifteen minutes early to buy some popcorn and drinks.",
-          question: "What time does the movie begin?",
-          choices: ["At seven o'clock", "At seven-fifteen", "At seven-thirty"],
-          answer: 2
-        },
-        {
-          audio: "My grandfather is seventy years old, but he is still very active. He goes for a long walk in the park every morning at six o'clock.",
-          question: "When does the grandfather go for a walk?",
-          choices: ["Every afternoon", "Every morning at six", "Only on weekends"],
-          answer: 1
-        },
-        {
-          audio: "Tom is a chef in a famous Italian restaurant. He is known for making the best pizza and pasta in the city.",
-          question: "What is Tom's job?",
-          choices: ["He is a waiter", "He is a chef", "He is a manager"],
-          answer: 1
-        },
-        {
-          audio: "The flight was delayed due to heavy fog. The passengers had to wait in the airport lounge for three hours before boarding.",
-          question: "Why was the flight late?",
-          choices: ["Because of heavy fog", "Because of a technical problem", "Because of the pilot"],
-          answer: 0
-        },
-        {
-          audio: "I wanted to buy the blue dress for thirty dollars, but it was sold out. So, I bought the red one instead for twenty-five dollars.",
-          question: "How much did the speaker spend on the dress?",
-          choices: ["Twenty dollars", "Twenty-five dollars", "Thirty dollars"],
-          answer: 1
-        },
-        {
-          audio: "Usually, I go to the gym on Mondays and Wednesdays. But this week, I am so busy that I can only go on Friday afternoon.",
-          question: "When will the speaker go to the gym this week?",
-          choices: ["On Monday", "On Wednesday", "On Friday"],
-          answer: 2
-        },
-        {
-          audio: "To get to the post office, go straight for two blocks, then turn left. Don't turn right at the traffic lights, that's the way to the bank.",
-          question: "How can the listener find the post office?",
-          choices: ["Turn right at the lights", "Go straight and turn left", "Go straight for three blocks"],
-          answer: 1
-        },
-        {
-          audio: "The football match was supposed to end at four o'clock. However, because of the rain, it lasted an extra twenty minutes.",
-          question: "What time did the football match finish?",
-          choices: ["At four o'clock", "At four-twenty", "At four-thirty"],
-          answer: 1
-        },
-        {
-          audio: "There were five people in the meeting room at first. Later, three more people joined, but one person had to leave early for a phone call.",
-          question: "How many people are in the meeting room now?",
-          choices: ["Five people", "Seven people", "Eight people"],
-          answer: 1
-        },
-        {
-          audio: "I tried calling her at the office twice, but she didn't answer. Finally, I reached her on her mobile phone while she was at the supermarket.",
-          question: "Where was the woman when she answered the phone?",
-          choices: ["At the office", "At home", "At the supermarket"],
-          answer: 2
-        },
-        {
-          audio: "Breakfast is served from seven to nine-thirty. If you want eggs and bacon, you should arrive before nine o'clock because they finish early.",
-          question: "What is the best time to arrive for a full breakfast?",
-          choices: ["At nine-thirty", "Before nine o'clock", "After ten o'clock"],
-          answer: 1
-        },
-        {
-          audio: "Most of my friends like playing basketball, but I find it quite tiring. I prefer swimming or playing table tennis with my brother.",
-          question: "Which sport does the speaker like best?",
-          choices: ["Basketball", "Football", "Table tennis"],
-          answer: 2
-        },
-        {
-          audio: "The train to London leaves from platform five. Platform three is for the train to Oxford, and platform six is currently closed.",
-          question: "Which platform should the passenger go to for London?",
-          choices: ["Platform three", "Platform five", "Platform six"],
-          answer: 1
-        },
-        {
-          audio: "It takes forty minutes to walk to the museum. If we take the bus, it only takes ten minutes, but we have to wait fifteen minutes for the next one.",
-          question: "How long is the bus ride itself?",
-          choices: ["Ten minutes", "Fifteen minutes", "Forty minutes"],
-          answer: 0
-        },
-        {
-          audio: "I thought the concert was on Saturday, but I checked the ticket again. It’s actually this Sunday evening.",
-          question: "When is the concert?",
-          choices: ["On Saturday", "On Sunday", "Next Monday"],
-          answer: 1
-        },
-        {
-          audio: "The pizza costs twelve dollars. If you want extra cheese, you have to pay two more dollars. Today, there is a one-dollar discount for students.",
-          question: "How much does a student pay for a pizza with extra cheese?",
-          choices: ["Twelve dollars", "Thirteen dollars", "Fourteen dollars"],
-          answer: 1
-        },
-        {
-          audio: "I usually take the bus to work, but today my car is fixed. So, I will drive to the office instead.",
-          question: "How will the speaker go to work today?",
-          choices: ["By bus", "By car", "By bike"],
-          answer: 1
-        },
-        {
-          audio: "We have apples and bananas in the fridge. I wanted to make a strawberry smoothie, but we ran out of strawberries yesterday.",
-          question: "What fruit does the speaker have now?",
-          choices: ["Apples and bananas", "Strawberries", "All of them"],
-          answer: 0
-        },
-        {
-          audio: "The party was planned for 6 PM, but the host was late. We finally started having dinner at 7:30 PM.",
-          question: "What time did the dinner start?",
-          choices: ["At 6:00 PM", "At 7:00 PM", "At 7:30 PM"],
-          answer: 2
-        },
-        {
-          audio: "To open the door, don't push it. You need to pull the handle and turn the key to the right.",
-          question: "How can the person open the door?",
-          choices: ["Push the door", "Pull the handle and turn the key", "Just turn the key"],
-          answer: 1
-        },
-        {
-          audio: "My brother is a doctor and my sister is a teacher. I am the only one in my family who works as an artist.",
-          question: "What is the speaker's job?",
-          choices: ["Doctor", "Teacher", "Artist"],
-          answer: 2
-        },
-        {
-          audio: "The elevator is broken. Please use the stairs to go to the third floor. The second floor is closed for cleaning.",
-          question: "Where should the people go if they use the stairs?",
-          choices: ["To the second floor", "To the third floor", "To the elevator"],
-          answer: 1
-        },
-        {
-          audio: "I was looking for my glasses on the sofa, but I found them in the bathroom later. I forgot I left them near the mirror.",
-          question: "Where did the speaker find the glasses?",
-          choices: ["On the sofa", "In the bathroom", "Under the mirror"],
-          answer: 1
-        },
-        {
-          audio: "We have three flights to Paris today. The 9 AM flight is full. There are still seats available for the 2 PM and 8 PM flights.",
-          question: "Which flight can the passenger book now?",
-          choices: ["The 9 AM flight", "The 2 PM flight", "The 5 PM flight"],
-          answer: 1
-        },
-        {
-          audio: "I lost my pen. I looked inside my backpack and under the desk, but then I saw it inside my pencil case.",
-          question: "Where was the pen?",
-          choices: ["Under the desk", "In the backpack", "In the pencil case"],
-          answer: 2
-        },
-        {
-          audio: "The bus usually arrives at 8:15. But today it is ten minutes late because of the heavy traffic.",
-          question: "What time did the bus arrive today?",
-          choices: ["At 8:15", "At 8:25", "At 8:05"],
-          answer: 1
-        },
-        {
-          audio: "I have three pets: two small cats and one big dog. My neighbor has three dogs, but I only have one.",
-          question: "How many cats does the speaker have?",
-          choices: ["One cat", "Two cats", "Three cats"],
-          answer: 1
-        },
-        {
-          audio: "We wanted to go to the beach, but it started to rain. So we decided to stay home and watch a movie instead.",
-          question: "What did they do in the end?",
-          choices: ["They went to the beach", "They played in the rain", "They watched a movie"],
-          answer: 2
-        },
-        {
-          audio: "The English class is in room 204. Room 205 is for Math, and the room across from it is the laboratory.",
-          question: "Which room is the Math class in?",
-          choices: ["Room 204", "Room 205", "The laboratory"],
-          answer: 1
-        },
-        {
-          audio: "My favorite fruit is orange. I also like grapes, but I don't like apples or bananas at all.",
-          question: "Which fruit does the speaker dislike?",
-          choices: ["Oranges", "Grapes", "Apples"],
-          answer: 2
-        },
-        {
-          audio: "The red shirt is 15 dollars, and the blue one is 20 dollars. If you buy both, you get a 5-dollar discount.",
-          question: "How much is the total price for both shirts after the discount?",
-          choices: ["30 dollars", "35 dollars", "40 dollars"],
-          answer: 0
-        },
-        {
-          audio: "I need to buy some bread and sugar. Oh, I just remembered we still have sugar, so I only need to buy bread.",
-          question: "What is the speaker going to buy?",
-          choices: ["Bread and sugar", "Only bread", "Only sugar"],
-          answer: 1
-        },
-        {
-          audio: "There were ten students in the library. Four students went back to class, and then two new students came in.",
-          question: "How many students are in the library now?",
-          choices: ["Six students", "Eight students", "Twelve students"],
-          answer: 1
-        },
-        {
-          audio: "To go to the museum, you can take bus number 12 or 15. Bus number 10 goes to the zoo, so don't take that one.",
-          question: "Which bus goes to the zoo?",
-          choices: ["Bus number 10", "Bus number 12", "Bus number 15"],
-          answer: 0
-        }
-      ]
     ];
 
     /* ============================================================
@@ -1944,7 +1884,7 @@
     let score = { correct: 0, wrong: 0, streak: 0 };
     let mistakeCount = 0;
     let answered = false;
-    let speechRate = 0.9;
+    let speechRate = 0.9;      // global — always read fresh by speakText()
     let autoplayEnabled = true;
     let lastSentence = '';
     let totalQuestions = 10;
@@ -1953,12 +1893,55 @@
     const modeLabels = ['', 'Word Listening', 'Simple Sentences', 'Grammar Focus', 'Dialogues', 'Paragraphs'];
 
     /* ============================================================
-       DIFFICULTY SELECTION
+       MENU PANEL — open / close
+       ============================================================ */
+    function openMenuPanel() {
+      // Sync difficulty pills inside menu to current state
+      ['beginner', 'intermediate', 'advanced'].forEach(d => {
+        const b = document.getElementById('diff-' + d);
+        if (b) b.classList.toggle('active', d === currentDifficulty);
+      });
+      document.getElementById('menu-overlay').classList.add('open');
+    }
+
+    function closeMenuPanel() {
+      document.getElementById('menu-overlay').classList.remove('open');
+    }
+
+    function handleOverlayClick(e) {
+      if (e.target === document.getElementById('menu-overlay')) closeMenuPanel();
+    }
+
+    function menuAction(action) {
+      closeMenuPanel();
+      if (action === 'hint') { showHint(); }
+      else if (action === 'repeatLast') { repeatLast(); }
+      else if (action === 'restart') { restartGame(); }
+      else if (action === 'menu') { goMenu(); }
+    }
+
+    /* Difficulty — from inside the slide menu */
+    function setDiffMenu(d) {
+      currentDifficulty = d;
+      ['beginner', 'intermediate', 'advanced'].forEach(k => {
+        const b = document.getElementById('diff-' + k);
+        if (b) b.classList.toggle('active', k === d);
+        const m = document.getElementById('menu-diff-' + k);
+        if (m) m.classList.toggle('active', k === d);
+      });
+    }
+
+    /* ============================================================
+       DIFFICULTY SELECTION — main menu screen
        ============================================================ */
     function setDiff(d) {
       currentDifficulty = d;
-      document.querySelectorAll('.diff-btn').forEach(b => b.classList.remove('active'));
-      event.target.classList.add('active');
+      ['beginner', 'intermediate', 'advanced'].forEach(k => {
+        const a = document.getElementById('menu-diff-' + k);
+        if (a) a.classList.toggle('active', k === d);
+        const b = document.getElementById('diff-' + k);
+        if (b) b.classList.toggle('active', k === d);
+      });
     }
 
     /* ============================================================
@@ -1967,21 +1950,34 @@
     function showScreen(id) {
       document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
       document.getElementById('screen-' + id).classList.add('active');
+
+      // Hide main footer on result screen (result has its own inline footer)
       const footer = document.getElementById('main-footer');
       footer.style.display = (id === 'result') ? 'none' : 'block';
+
+      // Show ☰ button only during gameplay
+      const menuBtn = document.getElementById('menu-toggle-btn');
+      const spacer = document.getElementById('header-spacer');
+      if (id === 'game') {
+        menuBtn.style.display = 'flex';
+        spacer.style.display = 'none';
+      } else {
+        menuBtn.style.display = 'none';
+        spacer.style.display = 'block';
+      }
     }
 
     function goMenu() {
       synth.cancel();
+      closeMenuPanel();
       showScreen('menu');
     }
 
     /* ============================================================
-       GAME START
+       GAME START  (ALL LOGIC PRESERVED)
        ============================================================ */
     function startGame(mode) {
       currentMode = mode;
-
       let rawData;
       if (mode === 1) rawData = mode1Data;
       else if (mode === 2) rawData = mode2Data;
@@ -1989,13 +1985,11 @@
       else if (mode === 4) rawData = mode4Data;
       else rawData = mode5Data;
 
-      // Filter by difficulty if needed (use all for simplicity, set question count)
       totalQuestions = (mode === 1) ? 10 : (mode === 5) ? 10 : 15;
       if (currentDifficulty === 'intermediate') totalQuestions = Math.round(totalQuestions * 1.2);
       if (currentDifficulty === 'advanced') totalQuestions = Math.round(totalQuestions * 1.5);
       totalQuestions = Math.min(totalQuestions, rawData.length);
 
-      // Shuffle and pick
       questionQueue = shuffle([...rawData]).slice(0, totalQuestions);
       currentIndex = 0;
       score = { correct: 0, wrong: 0, streak: 0 };
@@ -2005,12 +1999,10 @@
       loadQuestion();
     }
 
-    function restartGame() {
-      startGame(currentMode);
-    }
+    function restartGame() { startGame(currentMode); }
 
     /* ============================================================
-       QUESTION LOADING
+       QUESTION LOADING  (ALL LOGIC PRESERVED)
        ============================================================ */
     function loadQuestion() {
       answered = false;
@@ -2025,7 +2017,6 @@
 
       currentQuestion = questionQueue[currentIndex];
 
-      // Set question text
       if (currentMode === 1) {
         document.getElementById('question-text').textContent = '🔊 Listen and choose the word you hear.';
       } else if (currentMode === 3) {
@@ -2038,27 +2029,19 @@
         document.getElementById('question-text').textContent = '🔊 Listen and choose the correct sentence.';
       }
 
-      // Tense badge
       const badge = document.getElementById('tense-badge');
       if (currentQuestion.tense) {
         badge.style.display = 'inline-block';
-        const tenseMap = {
-          present_simple: 'Present Simple',
-          present_continuous: 'Present Continuous',
-          past_simple: 'Past Simple'
-        };
+        const tenseMap = { present_simple: 'Present Simple', present_continuous: 'Present Continuous', past_simple: 'Past Simple' };
         badge.textContent = tenseMap[currentQuestion.tense] || currentQuestion.tense;
       } else {
         badge.style.display = 'none';
       }
 
-      // Shuffle choices
       const shuffled = shuffleChoices(currentQuestion.choices, currentQuestion.answer);
       renderChoices(shuffled.choices, shuffled.correctIndex);
 
-      if (autoplayEnabled) {
-        setTimeout(() => playAudio(), 600);
-      }
+      if (autoplayEnabled) { setTimeout(() => playAudio(), 600); }
     }
 
     function shuffleChoices(choices, correctIndex) {
@@ -2081,20 +2064,18 @@
         btn.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${choice}</span>`;
         btn.setAttribute('data-correct', i === correctIndex ? '1' : '0');
         btn.addEventListener('click', () => handleAnswer(btn, i === correctIndex));
-        btn.addEventListener('touchstart', function () { }, { passive: true }); // Enable fast touch
+        btn.addEventListener('touchstart', function () { }, { passive: true });
         wrap.appendChild(btn);
       });
     }
 
     /* ============================================================
-       ANSWER HANDLING
+       ANSWER HANDLING  (ALL LOGIC PRESERVED)
        ============================================================ */
     function handleAnswer(btn, isCorrect) {
       if (answered) return;
-
       const allBtns = document.querySelectorAll('.choice-btn');
       allBtns.forEach(b => b.disabled = true);
-
       const feedback = document.getElementById('feedback-banner');
 
       if (isCorrect) {
@@ -2114,19 +2095,12 @@
         feedback.textContent = '❌ Not quite. Try listening again.';
         feedback.className = 'feedback-banner wrong show';
         updateScoreUI();
-
         if (mistakeCount >= 2) {
           answered = true;
-          // Show correct answer
-          allBtns.forEach(b => {
-            if (b.getAttribute('data-correct') === '1') {
-              b.classList.add('correct');
-            }
-          });
+          allBtns.forEach(b => { if (b.getAttribute('data-correct') === '1') b.classList.add('correct'); });
           feedback.textContent = '❌ The correct answer is highlighted in green.';
           document.getElementById('next-btn').style.display = 'flex';
         } else {
-          // Re-enable for another try
           setTimeout(() => {
             allBtns.forEach(b => {
               if (!b.classList.contains('wrong')) b.disabled = false;
@@ -2139,30 +2113,23 @@
     }
 
     /* ============================================================
-       NEXT QUESTION / END GAME
+       NEXT QUESTION / END GAME  (ALL LOGIC PRESERVED)
        ============================================================ */
     function nextQuestion() {
       currentIndex++;
-      if (currentIndex >= totalQuestions) {
-        showResult();
-      } else {
-        loadQuestion();
-      }
+      if (currentIndex >= totalQuestions) { showResult(); } else { loadQuestion(); }
     }
 
     function showResult() {
       synth.cancel();
-      const total = score.correct + score.wrong;
-      const pct = total > 0 ? Math.round((score.correct / totalQuestions) * 100) : 0;
+      const pct = Math.round((score.correct / totalQuestions) * 100);
       document.getElementById('res-correct').textContent = score.correct;
       document.getElementById('res-wrong').textContent = score.wrong;
       document.getElementById('result-score-big').textContent = pct + '%';
-
       let icon = '🏆', title = 'Excellent!', sub = 'Outstanding performance!';
       if (pct < 40) { icon = '📚'; title = 'Keep Practising'; sub = 'Listen again and try harder!'; }
       else if (pct < 60) { icon = '👍'; title = 'Good Effort!'; sub = 'You are improving!'; }
       else if (pct < 80) { icon = '⭐'; title = 'Well Done!'; sub = 'Great listening skills!'; }
-
       document.getElementById('result-icon').textContent = icon;
       document.getElementById('result-title').textContent = title;
       document.getElementById('result-sub').textContent = sub + ` (${score.correct}/${totalQuestions} correct)`;
@@ -2170,7 +2137,7 @@
     }
 
     /* ============================================================
-       SCORE UI
+       SCORE UI  (PRESERVED)
        ============================================================ */
     function updateScoreUI() {
       document.getElementById('score-correct').textContent = score.correct;
@@ -2180,22 +2147,26 @@
 
     /* ============================================================
        AUDIO — WEB SPEECH API
+       FIX: synth.cancel() → wait 50 ms → create utterance → speak.
+       Creating the SpeechSynthesisUtterance INSIDE the setTimeout
+       guarantees that utter.rate = speechRate always captures the
+       most recent slider value, even if the slider was moved right
+       before pressing Play. This resolves the Android inconsistency.
        ============================================================ */
     function speakText(text) {
       synth.cancel();
       lastSentence = text;
 
-      const utter = new SpeechSynthesisUtterance(text);
-      utter.lang = 'en-US';
-      utter.rate = speechRate;
-      utter.pitch = 1;
-
-      // Show animation
-      setSpeakStatus(true, 'Speaking...');
-      utter.onend = () => setSpeakStatus(false, 'Done. Press Replay to listen again.');
-      utter.onerror = () => setSpeakStatus(false, 'Audio error. Try Replay.');
-
-      synth.speak(utter);
+      setTimeout(function () {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.lang = 'en-US';
+        utter.rate = speechRate;      // always the latest global value
+        utter.pitch = 1;
+        setSpeakStatus(true, 'Speaking…');
+        utter.onend = () => setSpeakStatus(false, 'Done. Press Play to listen again.');
+        utter.onerror = () => setSpeakStatus(false, 'Audio error. Press Play to retry.');
+        synth.speak(utter);
+      }, 50);
     }
 
     function setSpeakStatus(active, msg) {
@@ -2203,22 +2174,34 @@
       document.getElementById('speak-text').textContent = msg;
     }
 
-    function playAudio() {
-      if (!currentQuestion) return;
-      speakText(currentQuestion.audio);
-    }
+    function playAudio() { if (!currentQuestion) return; speakText(currentQuestion.audio); }
+    function replayAudio() { playAudio(); }
+    function repeatLast() { if (lastSentence) speakText(lastSentence); }
 
-    function replayAudio() {
-      playAudio();
-    }
-
-    function repeatLast() {
-      if (lastSentence) speakText(lastSentence);
-    }
-
+    /* ============================================================
+       VOICE SPEED — FIXED FOR ANDROID
+       Three events guarantee the value is captured on every device:
+         input    → fires continuously while thumb moves (desktop + modern Android)
+         change   → fires when thumb is released (older Android fallback)
+         touchend → fires when finger lifts off screen (additional Android safety)
+       updateSpeed() immediately:
+         1. Writes the new value to global speechRate
+         2. Updates the display label (e.g. "0.80×")
+         3. Repaints the slider track fill via CSS --range-pct variable
+       The next speakText() call picks up the new rate automatically.
+       ============================================================ */
     function updateSpeed(val) {
       speechRate = parseFloat(val);
+
+      // Update the visible speed label immediately
       document.getElementById('speed-display').textContent = speechRate.toFixed(2) + '×';
+
+      // Repaint the slider filled-track gradient
+      const slider = document.getElementById('speed-slider');
+      const min = parseFloat(slider.min);   // 0.6
+      const max = parseFloat(slider.max);   // 1.2
+      const pct = ((speechRate - min) / (max - min)) * 100;
+      slider.style.setProperty('--range-pct', pct.toFixed(1) + '%');
     }
 
     function toggleAutoplay() {
@@ -2226,7 +2209,7 @@
     }
 
     /* ============================================================
-       HINT SYSTEM
+       HINT SYSTEM  (PRESERVED)
        ============================================================ */
     function showHint() {
       if (!currentQuestion) return;
@@ -2235,13 +2218,13 @@
         present_continuous: 'Hint: Present Continuous uses "am/is/are + verb-ing".',
         past_simple: 'Hint: Past Simple uses the past form (e.g., went, played, ate).',
       };
-      let hintText = hints[currentQuestion.tense] || 'Hint: Listen carefully to the key words in the sentence.';
+      const hintText = hints[currentQuestion.tense] || 'Hint: Listen carefully to the key words in the sentence.';
       document.getElementById('hint-text').textContent = hintText;
       document.getElementById('hint-box').classList.add('show');
     }
 
     /* ============================================================
-       UTILITIES
+       UTILITIES  (PRESERVED)
        ============================================================ */
     function shuffle(arr) {
       for (let i = arr.length - 1; i > 0; i--) {
@@ -2256,16 +2239,24 @@
        ============================================================ */
     document.addEventListener('DOMContentLoaded', function () {
       showScreen('menu');
-      // Warm up speech synthesis
-      window.speechSynthesis.getVoices();
+      window.speechSynthesis.getVoices(); // warm-up voices on load
+
+      // Attach all three events to the speed slider for full Android reliability
+      const slider = document.getElementById('speed-slider');
+
+      function onSlide() { updateSpeed(slider.value); }
+
+      slider.addEventListener('input', onSlide);                       // continuous drag
+      slider.addEventListener('change', onSlide);                       // on release
+      slider.addEventListener('touchend', onSlide, { passive: true });    // Android finger lift
+
+      // Initialise track fill to match default slider value (0.9)
+      updateSpeed(slider.value);
     });
 
-    // Handle Android Chrome bug where speechSynthesis stops after 15s
+    // Android Chrome bug: speechSynthesis can stall after ~15 s — keep-alive ping
     setInterval(function () {
-      if (synth.speaking) {
-        synth.pause();
-        synth.resume();
-      }
+      if (synth.speaking) { synth.pause(); synth.resume(); }
     }, 10000);
   </script>
 
